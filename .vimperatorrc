@@ -1,0 +1,45 @@
+" vim: set filetype=vim :
+
+" ビジュアルベルを表示しない
+set novisualbell
+set ignorecase
+set hintchars=asdfghjkl;
+set editor=/usr/local/bin/vim
+
+map <C-r> :source .vimperatorrc<Enter>
+map <BS> H
+map s :tabopen google 
+noremap j 5j
+noremap k 5k
+cmap <C-n> <TAB>
+cmap <C-p> <S-TAB>
+qmark m https://gmail.com
+qmark f https://www.facebook.com
+qmark c https://www.google.com/calendar/render?hl=ja
+qmark t https://twitter.com
+qmark q http://qiita.com/
+noremap <C-a> <C-v><C-a>
+
+" 
+set! config.trim_on_minimize=true
+
+
+hi HintActive background:lightblue
+hi HintElem background-color:lightblue
+hi Hint z-index:5000; font-family:monospace; font-size:16px; color:lightgreen; font-weight:bold; background-color:rgba(0,0,0,0.3); border-color:rgba(0,0,0,0.2); border-width:0px; border-style:solid; padding:0 1px; position:absolute;
+
+hi Normal color:white; background-color:rgba(0,0,0,0.5);
+hi InfoMsg color:white; background-color:rgba(0,0,0,0.2);
+hi ModeMsg color:lightgreen; background-color:black;
+hi URL color:lightgreen;
+hi StatusLine color:white;
+hi CmdLine color:white;
+
+hi CompTitle color:white;text-decoration:none;text-shadow:none;
+hi CompGroup color:lightgreen;
+hi CompItem color:lightgreen; background-color:none;
+hi CompItem[selected] color:white; background-color:lightgreen;
+" hi CompResult width:45%; color:lightgreen; overflow hidden; background-color:none; font-weight:bold; text-shadow:none;
+hi CompResult width:45%; overflow hidden; background-color:none; font-weight:bold; text-shadow:none;
+hi CompDesc   width:50% color:white; background-color:none; text-shadow:none;
+hi CompMsg    color:lightgreen; font-weight:bold;

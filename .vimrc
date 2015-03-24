@@ -204,6 +204,9 @@ NeoBundle 'chriskempson/vim-tomorrow-theme'
 NeoBundle 'w0ng/vim-hybrid'
 NeoBundle 'morhetz/gruvbox'
 NeoBundle 'jpo/vim-railscasts-theme'
+NeoBundle 'vim-scripts/Wombat'
+NeoBundle 'vim-scripts/wombat256.vim'
+NeoBundle 'vim-scripts/ecostation'
 
 "cording plugin
 NeoBundle 'Shougo/neocomplcache', {
@@ -352,6 +355,18 @@ NeoBundle 'koron/codic-vim'
 NeoBundle 'rhysd/unite-codic.vim'
 NeoBundle 'mtth/scratch.vim'
 NeoBundle 'haya14busa/incsearch.vim'
+NeoBundle 'tpope/vim-haml' " Vim runtime files for Haml, Sass, and SCSS
+NeoBundle 'slim-template/vim-slim'
+NeoBundle 'monochromegane/unite-yaml'
+NeoBundle 'vim-scripts/nginx.vim'
+
+NeoBundle 'tpope/vim-fugitive' " fugitive.vim: a Git wrapper so awesome, it should be illegal
+NeoBundle 'shumphrey/fugitive-gitlab.vim' " An extension to fugitive.vim for gitlab support
+NeoBundle 'idanarye/vim-merginal'
+NeoBundle 'gregsexton/gitv'
+NeoBundle 'int3/vim-extradite'
+
+NeoBundle 'hsanson/vim-android'
 
 call neobundle#end()
 NeoBundleCheck
@@ -385,12 +400,15 @@ noremap  <silent>[ide]f :<C-u>VimFilerExplorer<Enter>
 noremap  <silent>[ide]t :<C-u>TagbarToggle<Enter>
 noremap  <silent>[ide]p :<C-u>Project<Enter>
 noremap  <silent>[ide]s :<C-u>VimShellPop<Enter>
+noremap  <silent>[ide]q :bd<Enter>
 noremap  <silent>[unite]b :<C-u>Unite buffer_tab<Enter>
 noremap  <silent>[unite]d :<C-u>Unite -start-insert codic<enter>
+noremap  <silent>[unite]g :<C-u>Unite grep<enter>
 noremap  <silent>[unite]h :<C-u>Unite file_mru<Enter>
+noremap  <silent>[unite]l :<C-u>Unite line<Enter>
 noremap  <silent>[unite]ma :<C-u>Unite mark<Enter>
 noremap  <silent>[unite]me :<C-u>Unite output:message<Enter>
-noremap  <silent>[unite]o :<C-u>Unite -start-insert outline <Enter>
+noremap  <silent>[unite]o :<C-u>Unite outline <Enter>
 noremap  <silent>[unite]p :<C-u>Unite history/yank<Enter>
 noremap  <silent>[unite]s :<C-u>Unite session<Enter>
 noremap  <silent>[unite]t :<C-u>Unite tag<Enter>
@@ -617,65 +635,94 @@ augroup END
 " quickrun設定 important unite_quickfix,shabadoubi{{{
   "実行中のquickrunセッションの終了
 nnoremap <expr><silent><C-c> quickrun#is_running() ? quickrun#sweep_sessions() : "\<C-c>"
-let g:quickrun_config = {} "初期化
-let g:quickrun_config['_'] = {
-      \ 'hook/close_unite_quickfix/enable_hook_loaded' : 1,
-      \ 'hook/unite_quickfix/enable_failure' : 1,
-      \ 'hook/close_quickfix/enable_exit' : 1,
-      \ 'hook/close_buffer/enable_failure' : 1,
-      \ 'hook/close_buffer/enable_empty_data' : 1,
-      \ 'hook/echo/enable' : 1,
-      \ 'hook/echo/output_success' : 'success',
-      \ 'hook/echo/output_failure' : 'failure',
-      \ 'runner' : 'vimproc',
-      \ 'runner/vimproc/updatetime' : 40,
-      \ 'outputter' : 'multi:buffer:quickfix',
-      \ }
-let g:quickrun_config['java'] = {
+let g:quickrun_config = {
+      \ "_" : {
+      \   'hook/close_unite_quickfix/enable_hook_loaded' : 1,
+      \   'hook/unite_quickfix/enable_failure' : 1,
+      \   'hook/close_quickfix/enable_exit' : 1,
+      \   'hook/close_buffer/enable_failure' : 1,
+      \   'hook/close_buffer/enable_empty_data' : 1,
+      \   'hook/echo/enable' : 1,
+      \   'hook/echo/output_success' : 'success',
+      \   'hook/echo/output_failure' : 'failure',
+      \   'runner' : 'vimproc',
+      \   'runner/vimproc/updatetime' : 40,
+      \   'outputter' : 'multi:buffer:quickfix',
+      \ },
+      \ "java" : {
       \   'exec' : ['javac %o %s:p', '%c %s:t:r %a'],
       \   'hook/sweep/files' : '%S:p:r.class', 
       \   'tempfile' : '%{expand("%")}',
-      \ }
-let g:quickrun_config['html'] = {
+      \ },
+      \ "html" : {
       \   'outputter' : 'browser',
-      \ }
-let g:quickrun_config['markdown'] = {
+      \ },
+      \ "markdown" : {
       \   'type': 'markdown/gfm',
       \   'outputter' : 'browser',
-      \ }
-let g:quickrun_config['tex'] = {
-      \   'type': 'tex/platex'
-      \ }
-let g:quickrun_config['tex/platex'] = {
+      \ },
+      \ "tex" : {
+      \   'type': 'tex/latexmk',
+      \ },
+      \ "tex/platex" : {
+      \   'type': 'tex/platex',
       \   'command' : 'platex',
       \   'exec' : ['%c %s:p', 'dvipdfmx %s:p:r.dvi'],
       \   'outputter' : 'quickfix',
-      \ }
-let g:quickrun_config['tex/pdflatex'] = {
+      \ },
+      \ "tex/pdflatex" : {
+      \   'type': 'tex/pdflatex',
       \   'command' : 'pdflatex',
-      \   'exec' : '%c %s',
+      \   'exec' : ['%c %s'],
       \   'outputter' : 'quickfix',
-      \ }
-let g:quickrun_config['c/_'] = {
-      \   'cmdopt' : '-Wall'
-      \ }
-let g:quickrun_config['c/bluetooth'] = {
-      \   'cmdopt' : '-lbluetooth -pthread'
-      \ }
-let g:quickrun_config['arduino'] = {
+      \ },
+      \ "tex/latexmk" : {
+      \   'type': 'tex/latexmk',
+      \   'command' : 'latexmk',
+      \   'exec' : ['%c %o %s'],
+      \   'cmdopt': '-pdfdvi',
+      \   'outputter' : 'quickfix',
+      \ },
+      \ "c" : {
+      \   'type' : 'c/gstreamer',
+      \ },
+      \ "c/bluetooth" : {
+      \   'command' : 'gcc',
+      \   'exec' : ['%c %s %o'],
+      \   'cmdopt' : "-Wall -lbluetooth -pthread",
+      \ },
+      \ "c/opencv" : {
+      \   'command' : 'gcc',
+      \   'exec' : ['%c %s %o'],
+      \   'cmdopt' : "-Wall `pkg-config --cflags --libs opencv`",
+      \ },
+      \ "c/gstreamer" : {
+      \   'command' : 'gcc',
+      \   'exec' : ['%c %s %o'],
+      \   'cmdopt' : "-Wall `pkg-config --cflags --libs gstreamer-0.10`",
+      \ },
+      \ "cpp/opencv" : {
+      \   'command' : 'g++',
+      \   'exec' : ['%c %s %o'],
+      \   'cmdopt' : "-Wall `pkg-config --cflags --libs opencv`",
+      \ },
+      \ "arduino" : {
       \   'type' : 'arduino/ino',
-      \ }
-let g:quickrun_config['arduino/ino'] = {
-      \   'exec' : 'ino',
-      \   'cmdopt' : '%c build %s',
-      \ }
-let g:quickrun_config['ruby/testunit'] = {
-      \ }
-let g:quickrun_config['ruby/rspec'] = {
+      \ },
+      \ "arduino/ino" : {
+      \   'command' : 'ino',
+      \   'exec' : '%c build %s',
+      \ },
+      \ "ruby/testunit" : {
+      \ },
+      \ "ruby/rspec" : {
       \   'command' : 'rspec',
       \   'cmdopt' : '--format progress -I .',
       \   'filetype' : 'result.rspec',
-      \ }
+      \ },
+      \}
+
+nmap <Leader><Space>r :<C-u>QuickRun 
 " }}}
  
 "----------------------------------------------------------------
@@ -706,6 +753,13 @@ let g:jedi#completions_enabled = 0
 let g:jedi#auto_vim_configuration = 0
 let g:jedi#rename_command = ""
 "}}}
+"----------------------------------------------------------------
+" android設定
+if has('mac')
+  let g:android_sdk_path = 'FIXME'
+elseif has('unix')
+  let g:android_sdk_path = '~/android-sdk-linux'
+endif
 "----------------------------------------------------------------
 " vim-ruby設定
 let g:rubycomplete_buffer_loading = 1
@@ -1048,12 +1102,14 @@ aug END
 "airline {{{
 let g:airline_detect_modified=1
 let g:ariline_detect_paste=1
-let g:airline_enable_branch=1
-let g:airline_enable_bufferline=1
+" let g:airline_enable_branch=1
 let g:airline_theme='wombat'
 let g:airline_powerline_fonts=1
 
 " let g:airline#extensions#syntastic#enabled = 1
+let g:airline#extensions#bufferline#anabled = 1
+let g:airline#extensions#branch#enabled = 1
+let g:airline#extensions#branch#empty_message = '(no branch)'
 let g:airline#extensions#tagbar#enabled = 1
 let g:airline#extensions#quickfix#quickfix_text = 'Quickfix'
 let g:airline#extensions#quickfix#location_text = 'Location'
@@ -1203,6 +1259,11 @@ let g:gista#github_user = 'norikakip'
 " }}}
 
 "---------------------------------------------------------------
+" codic {{{
+nmap <silent><space>d :Codic<Enter>
+" }}}
+
+"---------------------------------------------------------------
 "オートコマンドの設定 
 "---------------------------------------------------------------
 augroup BufInit
@@ -1231,6 +1292,7 @@ augroup filetype-settings
     setlocal iminsert=2 shiftround
   endfunction
 
+  autocmd BufWinEnter,BufNewFile *.h set ft=c
   autocmd FileType c call s:c_filetype_settings()
   function! s:c_filetype_settings()
     setlocal tabstop=4 shiftwidth=4
@@ -1322,6 +1384,13 @@ augroup filetype-settings
   function! s:help_filetype_settings()
     nnoremap <buffer> q :q<Enter>
   endfunction
+
+  autocmd BufWinEnter,BufNewFile *.epub set filetype=epub
+  autocmd BufReadCmd *.epub call zip#Browse(expand("<amatch>"))
+  autocmd FileType epub call s:epub_filetype_settings()
+  function! s:epub_filetype_settings()
+    nnoremap <buffer> q :q<Enter>
+  endfunction
 augroup END
 
 command! CDCurrent call s:CDCurrent()
@@ -1360,3 +1429,9 @@ endfunction
 function! s:Notification(str)
   let s:notification_icon_path = expand('~/src/vim/src/vim.ico')
 endfunction
+
+command! VimrcEdit call s:VimrcEdit()
+function! s:VimrcEdit()
+  edit $MYVIMRC
+endfunction
+
