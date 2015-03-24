@@ -3,6 +3,6 @@ git clone https://github.com/Shougo/neobundle.vim.git ~/.vim/bundle/neobundle.vi
 
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE:-$0}")"; pwd)"
 pushd $script_dir
-ln -s .vimrc ~/.vimrc
-ln -s .gvimrc ~/.gvimrc
+cp .vimrc ~/
+cp .gvimrc ~/
 popd 
