@@ -1391,6 +1391,7 @@ augroup filetype-settings
   function! s:epub_filetype_settings()
     nnoremap <buffer> q :q<Enter>
   endfunction
+
 augroup END
 
 command! CDCurrent call s:CDCurrent()
