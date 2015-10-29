@@ -1,0 +1,43 @@
+set showmode
+set nowrapscan
+set ignorecase
+set smartcase
+set hlsearch
+set incsearch
+
+set scrolloff=10
+set list
+set listchars=eol:␍,tab:»\ ,extends:»,precedes:«
+set whichwrap=b,s,h,l,<,>,[,]
+set backspace=start,indent,eol
+
+nnoremap x "_x
+vnoremap x "_x
+
+" 選択範囲のインデントを連続して変更
+vnoremap < <gv
+vnoremap > >gv
+
+inoremap <C-a> <C-o>I
+inoremap <C-e> <C-o>A
+nnoremap <C-o> :action Back<Enter>
+nnoremap <C-i> :action Forward<Enter>
+nnoremap <C-p> :action PreviousTab<Enter>
+nnoremap <C-n> :action NextTab<Enter>
+nnoremap <Leader>r :action Run<Enter>
+
+nnoremap gD :action GotoImplementation<Enter>
+nnoremap gd :action VimGotoDeclaration<Enter>
+
+" nnoremap K :action FileChooser.GotoJDK<Enter>
+nnoremap K :action QuickJavaDoc<Enter>
+nnoremap <space>c :action FindUsages<Enter>
+nnoremap <space>e :action RecentFiles<Enter>
+nnoremap <space>r :action Refactorings.QuickListPopupAction<Enter>
+nmap <space>g [Generate]
+nnoremap [Generate] <Nop>
+nnoremap [Generate]d :action GenerateJavadoc<Enter>
+nnoremap [Generate]g :action GenerateGetter<Enter>
+nnoremap [Generate]s :action GenerateSetter<Enter>
+nnoremap [Generate]t :action GenerateTestMethod<Enter>
+cnoremap <Tab> <Nop>

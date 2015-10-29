@@ -1,5 +1,5 @@
 ;; Melpa
-(require 'package) ;; You might already have this line
+(require 'package)
 (add-to-list 'package-archives
 	     '("melpa" . "http://melpa.org/packages/") t)
 (when (< emacs-major-version 24)
@@ -13,24 +13,85 @@
   '(
     ;;;; use-package
     use-package
-    ;;;; auto-complete
+    ;;;; completion
     auto-complete
+    ac-emoji
+    ;;;; snippet
+    yasnippet
     ;;;; flymake
     flymake
+    flymake-elixir
+    flymake-haml
+    flymake-jshint
+    flymake-json
+    flymake-puppet
+    flymake-sass
+    flymake-yaml
+    ;;;; flycheck
+    flycheck
+    flycheck-irony
+    flycheck-pyflakes
+    flycheck-processing
+    ;;;; quickrun
+    quickrun
     ;;;; lisp
-    slime ac-slime
-    ;;;; sly
-    sly
+    slime ac-slime ;sly ac-sly
+    ;;;; clojure
+    clojure-mode inf-clojure cider ac-cider
+    clojure-cheatsheet slamhound
     ;;;; helm
-    helm helm-descbinds helm-ag 
-    ;;;; jedi
-    jedi
+    helm helm-descbinds helm-ag
+    helm-projectile
+    ;;;; helm with programming
+    helm-pydoc
+    ;;;; cpp
+    irony
+;    auto-complete-clang-async
+    ;;;; python
+    pyenv-mode jedi pydoc
+    django-mode django-snippets
     ;;;; ruby
-    rbenv inf-ruby robe flymake-ruby
+    rake rbenv robe flymake-ruby rspec-mode
+    yard-mode
+    ;;;; erlang
+    erlang
+    ;;;; elixir
+    elixir-mode alchemist ac-alchemist
+    ;;;; javascript
+    js2-mode tern tern-auto-complete
+    ;;;; typescript
+    typescript-mode tide requirejs requirejs-mode
+    ;;;; web
+    scss-mode markdown-mode web-mode
+    json-mode
+    ;;;; processing
+    processing-mode
+    ;;;; assembly
+    llvm-mode nasm-mode
     ;;; theme
     monokai-theme
-    ;;; other
-    markdown-mode codic
+    ;;; git tools
+    magit git-gutter gist
+    ;;; other tools
+    yatex
+    adoc-mode
+    bison-mode
+    vimrc-mode
+    yaml-mode
+    idle-highlight-mode
+    graphviz-dot-mode ninja-mode
+    puppet-mode
+    pandoc-mode
+    systemd                             ; Major mode for editing systemd units
+    codic
+    undo-tree
+    json-reformat
+    kanban
+    pomodoro
+    projectile
+    sudden-death
+    ;;; hobby
+    twittering-mode
     ))
 (dolist (package my/favorite-packages)
   (unless (package-installed-p package)
@@ -38,9 +99,24 @@
 
 (require 'use-package)
 
-;;; 右から左に読む言語に対応させないことで描画高速化
+;;; start splash screen disable
 (setq inhibit-splash-screen t)
+;;; load newer file compiled or not
+(setq load-prefer-newer t)
+;;; scratch initial message
+(setq initial-scratch-message
+"
+(find-file \"/tmp/scratch.rb\")
+(find-file \"/tmp/scratch.py\")
 
+(find-file \"/tmp/scratch.c\") 
+
+(find-file \"/tmp/scratch.cpp\")
+
+(find-file \"/tmp/scratch.ex\")
+(find-file \"/tmp/scratch.exs\")
+"
+)
 ;;; 同じ内容を履歴に記録しないようにする
 (setq history-delete-duplicates t)
 
@@ -87,6 +163,31 @@
 (global-set-key (kbd "C-c <up>") 'windmove-up)
 (global-set-key (kbd "C-c <right>") 'windmove-right)
 
+;;; undo-tree
+(use-package undo-tree
+  :init
+  (global-undo-tree-mode t)
+  (global-set-key (kbd "M-/") 'undo-tree-redo))
+
+;;; auto-complete
+(use-package auto-complete
+  :config
+  (ac-config-default)
+  (ac-set-trigger-key "TAB")
+  (setq ac-sources (append '(ac-source-gtags
+                             ac-source-yasnippet)
+                           ac-sources))
+  (auto-complete))
+
+;;; yasnippet
+(use-package yasnippet
+  :init
+  (yas-global-mode 1))
+
+;;; quickrun
+(use-package quickrun
+  :init
+  (global-set-key "\C-x\C-r" 'quickrun))
 
 ;;; helm
 (when (require 'helm-config nil t)
@@ -94,10 +195,11 @@
 
   (global-set-key (kbd "M-x") 'helm-M-x)
   (global-set-key (kbd "C-x C-f") 'helm-find-files)
-  (global-set-key (kbd "C-x C-r") 'helm-recentf)
+  (global-set-key (kbd "C-x C-h") 'helm-recentf)
   (global-set-key (kbd "M-y") 'helm-show-kill-ring)
   (global-set-key (kbd "C-c i") 'helm-imenu)
-  (global-set-key (kbd "C-x b") 'helm-buffers-list)
+  (global-set-key (kbd "C-x C-b") 'helm-buffers-list)
+  (global-set-key (kbd "M-g") 'helm-ag)
 
   (define-key helm-map(kbd "C-h") 'delete-backward-char)
   (define-key helm-find-files-map (kbd "C-h") 'delete-backward-char)
@@ -161,10 +263,6 @@
 (define-key global-map
   "\C-cG" 'scheme-other-window)
 
-;; slime
-(when (require 'slime nil t)
-  (add-hook 'slime-mode-hook 'set-up-slime-ac)
-  (add-hook 'slime-repl-mode-hook 'set-up-slime-ac))
   
 ;; path
 (add-to-list 'exec-path "~/.rbenv/shims")
@@ -178,17 +276,191 @@
 ;; line number
 (global-linum-mode t)
 
-;;; PROGRAMINNGS
+;; font
+(set-face-attribute 'default nil
+                    :family "Ricty")
+(set-fontset-font "fontset-default"
+                  'japanese-jisx0208
+                  '("Ricty"))
+(set-fontset-font "fontset-default"
+                  'katakana-jisx0201
+                  '("Ricty"))
+(add-to-list 'default-frame-alist
+             '(font . "Ricty-16"))
 
-;; ruby
-; rbenv
-(global-rbenv-mode)
-(setq rbenv-installation-dir "~/.rbenv")
+;;;;;;;;;;;;;;;;;;;
+;;  PROGRAMMING  ;;
+;;;;;;;;;;;;;;;;;;;
 
-(add-to-list 'auto-mode-alist
-             '("\\.rb$" . ruby-mode))
-(add-hook 'ruby-mode-hook
-          (function (lambda ()
-                      (robe-mode)
-                      (robe-start)
-                      (add-to-list 'electric-pair-pairs '(?| . ?|)))))
+;;;;;;;;;;;;
+;; python ;;
+;;;;;;;;;;;;
+
+;; jedi
+(use-package jedi
+  :init
+  (add-hook 'python-mode-hook 'jedi:setup)
+  :config
+  (setq jedi:complete-on-dot t))
+
+;;;;;;;;;;
+;; ruby ;;
+;;;;;;;;;;
+
+(use-package ruby-mode
+             :interpreter (("ruby"  . ruby-mode)
+                           ("jruby" . ruby-mode))
+             :mode (("\\.rb$" . ruby-mode)
+                    ("Capfile$" . ruby-mode)
+                    ("Gemfile$" . ruby-mode)
+                    ;; shebangがrubyの場合、ruby-modeを開く
+                    ("config.ru$" . ruby-mode))
+             
+             :config
+             (add-to-list 'electric-pair-mode '(?| . ?|)))
+
+;; rbenv
+(use-package rbenv
+             :config
+             (global-rbenv-mode)
+             (setq rbenv-installation-dir "~/.rbenv"))
+
+;; robe
+(use-package robe
+  :commands (robe-mode robe-start)
+  :init
+  (add-hook 'ruby-mode-hook 'robe-mode)
+  (add-hook 'robe-mode-hook 'ac-robe-setup))
+
+;;;;;;;;;;;;
+;; elixir ;;
+;;;;;;;;;;;;
+
+;; elixir-mode
+(use-package elixir-mode
+  :mode (("\\.ex$" . elixir-mode)
+         ("\\.exs$" . elixir-mode)
+         ("\\.elixir2\\'" . elixir-mode)))
+
+;; alchemist
+(use-package alchemist
+  :init
+  (add-hook 'elixir-mode-hook 'alchemist-mode)
+  (setq alchemist-mix-command "mix")
+  (setq alchemist-mix-test-task "test")
+  (setq alchemist-compile-command "elixirc"))
+
+(use-package ac-alchemist
+  :init
+  (add-hook 'elixir-mode-hook 'ac-alchemist-setup)
+  (add-hook 'alchemist-iex-mode-hook 'ac-alchemist-setup))
+
+;;;;;;;;;;
+;; lisp ;;
+;;;;;;;;;;
+
+;; ac-slime
+(use-package ac-slime
+  :init
+  (add-hook 'slime-mode-hook 'set-up-slime-ac)
+  (add-hook 'slime-repl-mode-hook 'set-up-slime-ac))
+
+;;;;;;;;;;;;;
+;; clojure ;;
+;;;;;;;;;;;;;
+
+;; cider
+(use-package cider
+  :init
+  (add-hook 'clojure-mode-hook 'cider-mode)
+  (add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
+  :config
+  (setq nrepl-hide-special-buffers t)
+  (setq nrepl-buffer-name-show-port t))
+
+;; ac-cider
+(use-package ac-cider
+  :init
+  (add-hook 'cider-mode-hook 'ac-cider-setup)
+  (add-hook 'cider-repl-mode-hook 'ac-cider-setup)
+  (add-to-list 'ac-modes 'cider-mode)
+  (add-to-list 'ac-modes 'cider-repl-mode))
+
+;;;;;;;;;
+;; cpp ;;
+;;;;;;;;;
+
+;; clang-complete
+(use-package auto-complete-clang-async
+  :init
+  (defun ac-cc-mode-setup ()
+    (setq ac-clang-complete-executable (expand-file-name "~/.emacs.d/bin/clang-complete"))
+    (setq ac-sources (append '(ac-source-clang-async) ac-sources))
+    (setq ac-clang-cflags (mapcar (lambda (item)
+                                    (concat "-I" (expand-file-name item)))
+                                  (split-string
+                                   "/usr/include
+                                    /usr/include/c++/4.9.2
+                                    /usr/include/boost
+                                    /usr/include/sys")))
+    (setq ac-clang-cflags (append '("-std=c++1y") ac-clang-cflags))
+    (ac-clang-launch-completion-process))
+  (add-hook 'c-mode-common-hook 'ac-cc-mode-setup)
+  (add-hook 'c++-mode-common-hook 'ac-cc-mode-setup)
+  (add-hook 'auto-complete-mode-hook 'ac-common-setup)
+  (global-set-key "\M-/" 'ac-start)
+  (define-key ac-complete-mode-map "\C-n" 'ac-next)
+  (define-key ac-complete-mode-map "\C-p" 'ac-previous)
+  :config
+  (auto-complete-mode t))
+
+;;;;;;;;;;;;;;;;;
+;; javascript  ;;
+;;;;;;;;;;;;;;;;;
+
+;; tern
+(use-package tern
+  :init
+  (add-hook 'js2-mode-hook 'tern-mode))
+
+;; tern-auto-complete
+(use-package tern-auto-complete
+  :init
+  (add-hook 'tern-mode-hook 'tern-ac-setup))
+
+;;;;;;;;;;;
+;; other ;;
+;;;;;;;;;;;
+
+;; yaml-mode
+(use-package yaml-mode
+  :mode (("\\.yml$" . yaml-mode)))
+
+;; web-mode
+(use-package web-mode
+  :mode (("\\.erb$" . web-mode))
+  :config
+  (setq web-mode-markup-indent-offset 2)
+  (setq web-mode-enable-auto-pairing t)
+  (setq web-mode-enable-css-colorization t)
+  (setq web-mode-enable-current-element-highlight t))
+
+;; git-gutter
+(use-package git-gutter
+  :init
+  (global-git-gutter-mode +1))
+
+;;;;;;;;;;;
+;; hobby ;;
+;;;;;;;;;;;
+
+;; twittering-mode
+(use-package twittering-mode
+  :init
+  (setq twittering-use-master-password t)
+  (setq twittering-icon-mode t)
+  (setq twittering-timer0interval 300))
+
+
+(global-set-key "\C-q" 'kill-buffer-and-window)
+(global-set-key "\C-m" 'newline-and-indent)

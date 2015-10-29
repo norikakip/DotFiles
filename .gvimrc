@@ -10,8 +10,8 @@ if has('mac')
   set guifont=Inconsolata\ for\ Powerline:h14
   set guifontwide=Ricty\ Regular:h14
 elseif has('unix')
-  set guifont=Inconsolata\ for\ Powerline\ 14
-  set guifontwide=Ricty\ 14
+  set guifont=Inconsolata\ for\ Powerline\ 16
+  set guifontwide=Ricty\ 16
 endif
 set ambiwidth=single
 set encoding=utf-8
