@@ -267,6 +267,8 @@
 ;; path
 (add-to-list 'exec-path "~/.rbenv/shims")
 (add-to-list 'exec-path "~/.pyenv/shims")
+(add-to-list 'exec-path "~/.ndenv/shims")
+(add-to-list 'exec-path "~/.exenv/shims")
 ;; theme
 (load-theme 'monokai t)
 

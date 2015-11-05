@@ -16,7 +16,9 @@ endfunction
 call IncludePath(expand('~/.pyenv/shims'))
 call IncludePath(expand('~/.rbenv/shims'))
 call IncludePath(expand('~/.ndenv/shims'))
+call IncludePath(expand('~/.ndenv/bin'))
 call IncludePath(expand('~/.exenv/shims'))
+call IncludePath(expand('~/.exenv/bin'))
 
 if filereadable($HOME . '/.lvimrc.prepend')
   source ~/.lvimrc.prepend
@@ -398,6 +400,12 @@ NeoBundle 'Shougo/echodoc.vim'
 "NeoBundle 'gilligan/vim-lldb'
 NeoBundle 'thinca/vim-localrc'
 NeoBundle 'elixir-lang/vim-elixir'
+NeoBundle 'mattreduce/vim-mix'
+NeoBundle 'BjRo/vim-extest', {
+      \ 'autoload': {
+      \   'filetypes': 'elixir'
+      \ },
+      \}
 NeoBundle 'avdgaag/vim-phoenix'
 NeoBundleFetch "koron/imcsc-vim", {
       \   "rtp" : "fcitx-python",
@@ -428,9 +436,11 @@ syntax enable
 "
 "----------------------------------------------------------------
 "solarized colorscheme 設定(gvimrcにてcolorschemeをmolokai){{{
-let g:solarized_termcolors=256
-colorscheme solarized
-if has('unix')
+if neobundle#is_sourced("vim-colors-solarized")
+  let g:solarized_termcolors=256
+  colorscheme solarized
+endif
+if neobundle#is_sourced("vim-tomorrow-theme") && has('unix') 
   colorscheme Tomorrow-Night-Eighties
 endif
 "}}}
@@ -464,17 +474,21 @@ noremap  [unite]<Space> :<C-u>Unite output:
 noremap  <silent><C-TAB> :<C-u>Unite buffer<Enter>
 inoremap <silent><C-TAB> <C-o>:Unite buffer<Enter>
 
-call unite#custom#profile('default', 'context', {
-      \ 'prompt': '» '
-      \})
+if neobundle#is_sourced("unite.vim")
+  call unite#custom#profile('default', 'context', {
+        \ 'prompt': '» '
+        \})
+endif
 
 " }}}
 
 
 "----------------------------------------------------------------
 " lexima.vim {{{
-let g:lexima_no_default_rules = 1
-call lexima#set_default_rules()
+if neobundle#is_sourced("lexima.vim")
+  let g:lexima_no_default_rules = 1
+  call lexima#set_default_rules()
+endif
 " }}}
 
 "----------------------------------------------------------------
@@ -695,7 +709,7 @@ endif
   "
 nnoremap <expr><silent><C-c> quickrun#is_running() ? quickrun#sweep_sessions() : "\<C-c>"
 let g:quickrun_config = {
-      \ "_" : {
+      \ '_' : {
       \   'hook/quickfix_replace_tempname_to_bufnr' : 1,
       \   'hook/close_unite_quickfix/enable_hook_loaded' : 1,
       \   'hook/unite_quickfix/enable_failure' : 1,
@@ -709,102 +723,102 @@ let g:quickrun_config = {
       \   'runner/vimproc/updatetime' : 40,
       \   'outputter' : 'multi:buffer:quickfix',
       \ },
-      \ "java" : {
+      \ 'java' : {
       \   'exec' : ['javac %o %s:p', '%c %s:t:r %a'],
       \   'hook/sweep/files' : '%S:p:r.class', 
       \   'tempfile' : '%{expand("%")}',
       \ },
-      \ "html" : {
+      \ 'html' : {
       \   'outputter' : 'browser',
       \ },
-      \ "markdown" : {
+      \ 'markdown' : {
       \   'type': 'markdown/gfm',
       \   'outputter' : 'browser',
       \ },
-      \ "tex" : {
+      \ 'tex' : {
       \   'type': 'tex/latexmk',
       \ },
-      \ "tex/platex" : {
+      \ 'tex/platex' : {
       \   'type': 'tex/platex',
       \   'command' : 'platex',
       \   'exec' : ['%c %s:p', 'dvipdfmx %s:p:r.dvi'],
       \   'outputter' : 'quickfix',
       \ },
-      \ "tex/pdflatex" : {
+      \ 'tex/pdflatex' : {
       \   'type': 'tex/pdflatex',
       \   'command' : 'pdflatex',
       \   'exec' : ['%c %s', 'evince %s:p:r.pdf'],
       \   'outputter' : 'quickfix',
       \ },
-      \ "tex/latexmk" : {
+      \ 'tex/latexmk' : {
       \   'type': 'tex/latexmk',
       \   'command' : 'latexmk',
       \   'exec' : ['%c %o %s'],
       \   'cmdopt': '-pdfdvi',
       \   'outputter' : 'quickfix',
       \ },
-      \ "c" : {
+      \ 'c' : {
       \   'type' : 'c/default',
       \ },
-      \ "c/default" : {
+      \ 'c/default' : {
       \   'command' : 'gcc',
-      \   'cmdopt' : "-Wall -O2 -g",
+      \   'cmdopt' : '-Wall -O2 -g',
       \   'exec' : ['%c %o %s -o %s:p:r', '%s:p:r %a'],
       \   'tempfile': '%{tempname()}.c',
       \   'hook/sweep/files': '%S:p:r'
       \ },
-      \ "c/bluetooth" : {
+      \ 'c/bluetooth' : {
       \   'command' : 'gcc',
-      \   'cmdopt' : "-Wall -O2 -g -lbluetooth -pthread",
+      \   'cmdopt' : '-Wall -O2 -g -lbluetooth -pthread',
       \   'exec' : ['%c %o %s -o %s:p:r', '%s:p:r %a'],
       \   'tempfile': '%{tempname()}.c',
       \   'hook/sweep/files': '%S:p:r'
       \ },
-      \ "c/graphviz" : {
+      \ 'c/graphviz' : {
       \   'command' : 'gcc',
-      \   'cmdopt' : "-Wall -O2 -g `pkg-config --cflags --libs libgvc`",
+      \   'cmdopt' : '-Wall -O2 -g `pkg-config --cflags --libs libgvc`',
       \   'exec' : ['%c %o %s -o %s:p:r', '%s:p:r %a'],
       \   'tempfile': '%{tempname()}.c',
       \   'hook/sweep/files': '%S:p:r'
       \ },
-      \ "c/opencv" : {
+      \ 'c/opencv' : {
       \   'command' : 'gcc',
-      \   'cmdopt' : "-Wall -O2 -g `pkg-config --cflags --libs opencv`",
+      \   'cmdopt' : '-Wall -O2 -g `pkg-config --cflags --libs opencv`',
       \   'exec' : ['%c %o %s -o %s:p:r', '%s:p:r %a'],
       \   'tempfile': '%{tempname()}.c',
       \   'hook/sweep/files': '%S:p:r'
       \ },
-      \ "c/gstreamer-0.10" : {
+      \ 'c/gstreamer-0.10' : {
       \   'command' : 'gcc',
-      \   'cmdopt' : "-Wall -O2 -g `pkg-config --cflags --libs gstreamer-0.10`",
+      \   'cmdopt' : '-Wall -O2 -g `pkg-config --cflags --libs gstreamer-0.10`',
       \   'exec' : ['%c %o %s -o %s:p:r', '%s:p:r %a'],
       \   'tempfile': '%{tempname()}.c',
       \   'hook/sweep/files': '%S:p:r'
       \ },
-      \ "c/gstreamer" : {
+      \ 'c/gstreamer' : {
       \   'command' : 'gcc',
-      \   'cmdopt' : "-Wall -O2 -g `pkg-config --cflags --libs gstreamer`",
+      \   'cmdopt' : '-Wall -O2 -g `pkg-config --cflags --libs gstreamer`',
       \   'exec' : ['%c %o %s -o %s:p:r', '%s:p:r %a'],
       \   'tempfile': '%{tempname()}.c',
       \   'hook/sweep/files': '%S:p:r'
       \ },
-      \ "cpp/opencv" : {
+      \ 'cpp/opencv' : {
       \   'command' : 'g++',
-      \   'cmdopt' : "-Wall -O2 -g `pkg-config --cflags --libs opencv`",
+      \   'cmdopt' : '-Wall -O2 -g `pkg-config --cflags --libs opencv`',
       \   'exec' : ['%c %o %s -o %s:p:r', '%s:p:r %a'],
       \   'tempfile': '%{tempname()}.c',
       \   'hook/sweep/files': '%S:p:r'
       \ },
-      \ "arduino" : {
+      \ 'arduino' : {
       \   'type' : 'arduino/ino',
       \ },
-      \ "arduino/ino" : {
+      \ 'arduino/ino' : {
       \   'command' : 'ino',
       \   'exec' : '%c build %s',
       \ },
-      \ "ruby/testunit" : {
+      \ 'ruby/testunit' : {
       \ },
-      \ "ruby/rspec" : {
+      \ 'ruby/rspec' : {
       \   'command' : 'rspec',
       \   'cmdopt' : '--format progress -I .',
       \   'filetype' : 'result.rspec',
@@ -816,21 +830,23 @@ nmap <Leader><Space>r :<C-u>QuickRun
  
 "----------------------------------------------------------------
 " watchdogs {{{
-let g:watchdogs_check_BufWritePost_enables = {
-      \ 'c' : 1,
-      \ 'cpp' : 1,
-      \ 'coffee' : 1,
-      \ 'javascript' : 1,
-      \ 'php' : 1,
-      \ 'ruby' : 1,
-      \ 'python' : 1,
-      \ 'scss' : 1,
-      \}
-let g:quickrun_config["watchdogs_checker/_"] = {
-      \   'hook/unite_quickfix/enable_failure' : 1,
-      \   "hook/close_quickfix/enable_exit" : 1,
-      \ }
-call watchdogs#setup(g:quickrun_config)
+if neobundle#is_sourced("vim-watchdogs")
+  let g:watchdogs_check_BufWritePost_enables = {
+        \ 'c' : 1,
+        \ 'cpp' : 1,
+        \ 'coffee' : 1,
+        \ 'javascript' : 1,
+        \ 'php' : 1,
+        \ 'ruby' : 1,
+        \ 'python' : 1,
+        \ 'scss' : 1,
+        \}
+  let g:quickrun_config["watchdogs_checker/_"] = {
+        \   'hook/unite_quickfix/enable_failure' : 1,
+        \   'hook/close_quickfix/enable_exit' : 1,
+        \ }
+  call watchdogs#setup(g:quickrun_config)
+endif
 "}}}
 
 "----------------------------------------------------------------
@@ -945,19 +961,6 @@ imap <C-s> <Plug>(neosnippet_expand_or_jump)
 " }}}
 
 "----------------------------------------------------------------
-" リンクを開くブラウザ指定 browser {{{
-if has('unix')
-  let openuri_cmd = "call system('firefox %s &')"
-else
-  " let openuri_cmd = '!start "rundll32.exe" url.dll,FileProtocolHandler %s'
-  " Internet explorer
-  " let openuri_cmd = '!start "C:/Program Files/Internet Explorer/iexplore.exe" %s'
-  " firefox
-  let openuri_cmd = '!start "C:/Program Files/Mozilla Firefox/firefox.exe" %s'
-endif
-" }}}
-
-"----------------------------------------------------------------
 " VimFiler設定 {{{
 " vimfilerをデフォルトに設定
 let g:vimfiler_as_default_explorer = 1
@@ -1046,44 +1049,59 @@ let g:showmarks_include="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 "----------------------------------------------------------------
 " VimShell設定 {{{
-map <Leader>sh <Plug>(vimshell_split_switch)
-let g:vimshell_scrollback_limit = 5000
-let g:vimshell_user_prompt = 'getcwd()'
-let g:vimshell_enable_smart_case = 1
-if has('win32') || has('win64')
-  "Display user name on Windows.
-  let g:vimshell_prompt = $USERNAME. "% "
-else
-  "Display user name on Linux.
-  let g:vimshell_prompt = $USER . "% "
-endif
-" Initialize execute file list
-let g:vimshell_execute_file_list = {}
-call vimshell#set_execute_file('txt,vim,c,h,cpp,d,java,css,scss,js,tex', 'vim') "open in vim
-call vimshell#set_execute_file('html,xhtml', 'gexe firefox')
-call vimshell#set_execute_file('pdf', 'gexe evince')
+if neobundle#is_sourced("vimshell")
+  map <Leader>sh <Plug>(vimshell_split_switch)
+  let g:vimshell_scrollback_limit = 5000
+  let g:vimshell_user_prompt = 'getcwd()'
+  let g:vimshell_enable_smart_case = 1
+  if has('win32') || has('win64')
+    "Display user name on Windows.
+    let g:vimshell_prompt = $USERNAME. "% "
+  else
+    "Display user name on Linux.
+    let g:vimshell_prompt = $USER . "% "
+  endif
+  " Initialize execute file list
+  let g:vimshell_execute_file_list = {}
+  call vimshell#set_execute_file('txt,vim,c,h,cpp,d,java,css,scss,js,tex', 'vim') "open in vim
+  call vimshell#set_execute_file('html,xhtml', 'gexe firefox')
+  call vimshell#set_execute_file('pdf', 'gexe evince')
 
-let g:vimshell_execute_file_list['rb'] = 'ruby'
-let g:vimshell_execute_file_list['pl'] = 'perl'
-let g:vimshell_execute_file_list['py'] = 'python'
-let g:vimshell_execute_file_list['html'] = 'firefox'
+  let g:vimshell_execute_file_list['rb'] = 'ruby'
+  let g:vimshell_execute_file_list['pl'] = 'perl'
+  let g:vimshell_execute_file_list['py'] = 'python'
+  let g:vimshell_execute_file_list['html'] = 'firefox'
+  endif
 " }}}
 
 "----------------------------------------------------------------
 " QfixHowm/qfixmemo設定 {{{
-let QfixHowm_key = 'g'
-let howm_dir = g:DropBox_dir . '/editedByVim/howm'
-let hown_filename = '%Y/%m/%Y-%m-%d-%H%M%S.howm.txt'
-let howm_fileencoding = 'utf-8'
-let howm_fileformat = 'unix'
-let QFixHowm_FileType = 'qfix_memo'
-let qfixmemo_filetype = 'qfix_memo'
-let qfixmemo_pairfile_dir = 'pairfile'
-let calendar_holidayfile = howm_dir . '/Sche-Hd-0000-00-00-000000.cp932'
-call openuri#init()
-let QfixMRU_RootDir = '~/.vim/vimnewfiles/'
-let QfixMRU_Filename = '~/.vim/vimnewfiles/.qfixmru'
-let QfixMRU_Title = {}
+if neobundle#is_sourced("qfixhowm")
+  let QfixHowm_key = 'g'
+  let howm_dir = g:DropBox_dir . '/editedByVim/howm'
+  let hown_filename = '%Y/%m/%Y-%m-%d-%H%M%S.howm.txt'
+  let howm_fileencoding = 'utf-8'
+  let howm_fileformat = 'unix'
+  let QFixHowm_FileType = 'qfix_memo'
+  let qfixmemo_filetype = 'qfix_memo'
+  let qfixmemo_pairfile_dir = 'pairfile'
+  let calendar_holidayfile = howm_dir . '/Sche-Hd-0000-00-00-000000.cp932'
+  call openuri#init()
+  let QfixMRU_RootDir = '~/.vim/vimnewfiles/'
+  let QfixMRU_Filename = '~/.vim/vimnewfiles/.qfixmru'
+  let QfixMRU_Title = {}
+  " openuri browser {{{
+  if has('unix')
+    let openuri_cmd = "call system('firefox %s &')"
+  else
+    " let openuri_cmd = '!start "rundll32.exe" url.dll,FileProtocolHandler %s'
+    " Internet explorer
+    " let openuri_cmd = '!start "C:/Program Files/Internet Explorer/iexplore.exe" %s'
+    " firefox
+    let openuri_cmd = '!start "C:/Program Files/Mozilla Firefox/firefox.exe" %s'
+  endif
+  " }}}
+endif
 " }}}
 
 "----------------------------------------------------------------
