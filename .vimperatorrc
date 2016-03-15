@@ -19,6 +19,7 @@ qmark c https://www.google.com/calendar/render?hl=ja
 qmark t https://twitter.com
 qmark q http://qiita.com/
 noremap <C-a> <C-v><C-a>
+nnoremap <silent> e :javascript<Space>TreeStyleTabBrowserAutoHide.toggleMode();<CR>
 
 " 
 set! config.trim_on_minimize=true

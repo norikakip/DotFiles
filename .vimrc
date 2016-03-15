@@ -14,7 +14,9 @@ function! IncludePath(path)
   endif
 endfunction
 call IncludePath(expand('~/.pyenv/shims'))
+call IncludePath(expand('~/.pyenv/bin'))
 call IncludePath(expand('~/.rbenv/shims'))
+call IncludePath(expand('~/.rbenv/bin'))
 call IncludePath(expand('~/.ndenv/shims'))
 call IncludePath(expand('~/.ndenv/bin'))
 call IncludePath(expand('~/.exenv/shims'))
@@ -142,8 +144,10 @@ vnoremap > >gv
 inoremap <C-a> <C-o>I
 inoremap <C-e> <C-o>A
 inoremap <C-w> <C-o><C-w>
+nnoremap x "_x
 nnoremap <silent><C-l> :tabnext<Enter>
 nnoremap <silent><C-h> :tabprevious<Enter>
+nnoremap <silent><C-w><C-w> :tabnext<enter>
 inoremap <silent><C-l> <C-o>:tabnext<Enter>
 inoremap <silent><C-h> <C-o>:tabprevious<Enter>
 
@@ -156,8 +160,8 @@ cnoremap <C-e> <END>
 filetype off
 if has('vim_starting')
   set runtimepath+=~/.vim/bundle/neobundle.vim/
-  call neobundle#begin(expand('~/.vim/bundle'))
 endif
+call neobundle#begin(expand('~/.vim/bundle'))
 
 " util
 NeoBundleFetch 'Shougo/neobundle.vim'
@@ -184,7 +188,7 @@ NeoBundle 'tpope/vim-surround'
 NeoBundle 'tpope/vim-repeat'
 NeoBundle 'sjl/gundo.vim' " A git mirror of gundo.vim
 NeoBundle 'vim-scripts/ShowMarks' "マークを可視化
-NeoBundle 'Lokaltog/vim-easymotion' "キーカーソル移動補助
+" NeoBundle 'Lokaltog/vim-easymotion' "キーカーソル移動補助
 NeoBundle 'vim-scripts/Justify' "両端揃え
 NeoBundle 'h1mesuke/vim-alignta' "テキスト整形
 NeoBundle 'kana/vim-textobj-user' "テキストオブジェクト拡張
@@ -243,10 +247,11 @@ NeoBundle 'godlygeek/tabular'
 NeoBundle 'joker1007/vim-markdown-quote-syntax'
 NeoBundle 'rcmdnk/vim-markdown'
 NeoBundle 'hail2u/vim-css3-syntax'
-NeoBundle 'Simple-Javascript-Indenter' " 1.0.1 A simple javascript indent script, support OOP, jquery
+NeoBundleFetch 'Simple-Javascript-Indenter' " 1.0.1 A simple javascript indent script, support OOP, jquery
 NeoBundleFetch 'jelera/vim-javascript-syntax' " Enhanced javascript syntax file for Vim
-NeoBundle 'pangloss/vim-javascript'
-NeoBundle 'mxw/vim-jsx'
+NeoBundleFetch 'pangloss/vim-javascript'
+NeoBundleFetch 'mxw/vim-jsx'
+NeoBundle 'isRuslan/vim-es6'
 
 NeoBundle 'tpope/vim-rails'
 NeoBundle 'tpope/vim-rake'
@@ -273,13 +278,21 @@ NeoBundle 'javacomplete', {
       \ },
       \}
 NeoBundle 'kamichidu/vim-javaclasspath'
-NeoBundle 'kamichidu/vim-unite-javaimport' , {
+NeoBundleLazy 'kamichidu/vim-unite-javaimport' , {
       \ 'depends': [
       \     'Shougo/unite.vim',
-      \     'Shougo/vimproc.vim',
+      \     'Shougo/vimproc',
       \     'kamichidu/vim-javaclasspath',
       \     'yuratomo/w3m.vim',
       \  ],
+      \  'autoload': {
+      \     'unite_sources' : [
+      \         'javaimport/class',
+      \         'javaimport/field',
+      \         'javaimport/method',
+      \         'javaimport/package',
+      \     ],
+      \  }
       \}
 NeoBundle 'Shougo/unite-build' " Build by unite interface
 NeoBundle 'osyo-manga/unite-qfixhowm'
@@ -327,10 +340,10 @@ NeoBundle 'osyo-manga/vim-monster', {
 NeoBundle 'mackee/unite-httpstatus'
 NeoBundle 'Shougo/vinarise.vim' " Ultimate hex editing system with Vim
 NeoBundle 'davidhalter/jedi-vim', {
-      \ 'disabled' : !has('python'),
+      \ 'disabled' : !has('python') && !has('python3'),
       \ 'build' : {
-      \     'mac' : 'pip install jedi',
-      \     'unix' : 'pip install jedi',
+      \     'mac' : 'pip install --upgrade jedi',
+      \     'unix' : 'pip install --upgrade jedi',
       \ },
       \}
 NeoBundle 'tacroe/unite-mark'
@@ -401,7 +414,7 @@ NeoBundle 'Shougo/echodoc.vim'
 NeoBundle 'thinca/vim-localrc'
 NeoBundle 'elixir-lang/vim-elixir'
 NeoBundle 'mattreduce/vim-mix'
-NeoBundle 'BjRo/vim-extest', {
+NeoBundleLazy 'BjRo/vim-extest', {
       \ 'autoload': {
       \   'filetypes': 'elixir'
       \ },
@@ -421,6 +434,45 @@ NeoBundle 'marijnh/tern_for_vim', {
       \ 'autoload': {
       \   'functions': ['tern#Complete', 'tern#Enable'],
       \   'filetypes': 'javascript'
+      \ }
+      \}
+NeoBundleLazy 'ElmCast/elm-vim', {
+      \ 'autoload': {
+      \   'filetypes': 'elm'
+      \ }
+      \}
+NeoBundleLazy 'rhysd/vim-crystal', {
+      \ 'autoload': {
+      \   'filetypes': 'crystal'
+      \ }
+      \}
+NeoBundle 'liquidz/vivi.vim', {
+      \ 'autoload': {
+      \   'filetypes': 'elixir'
+      \ },
+      \ 'depends': [
+      \   'elixir-lang/vim-elixir',
+      \   'Shougo/vimproc',
+      \   'Shougo/neocomplete',
+      \   'thinca/vim-quickrun',
+      \   'thinca/vim-ref',
+      \   'osyo-manga/shabadou.vim',
+      \   'osyo-manga/vim-watchdogs'
+      \ ]
+      \}
+NeoBundleLazy 'udalov/kotlin-vim', {
+      \ 'autoload': {
+      \   'filetypes': 'kotlin' 
+      \ }
+      \}
+NeoBundleLazy 'tpope/vim-fireplace', {
+      \ 'autoload': {
+      \   'filetypes': 'clojure'
+      \ }
+      \}
+NeoBundleLazy 'ujihisa/neoclojure.vim', {
+      \ 'autoload': {
+      \   'filetypes': 'clojure'
       \ }
       \}
 call neobundle#end()
@@ -450,8 +502,10 @@ endif
 
 nnoremap [ide] <Nop>
 nnoremap [unite] <Nop>
+nnoremap [git] <Nop>
 nmap <Space> [ide]
 nmap <Space>u [unite]
+nmap <Space>g [git]
 
 noremap  <silent>[ide]f :<C-u>VimFilerBufferDir<Enter>
 noremap  <silent>[ide]t :<C-u>TagbarToggle<Enter>
@@ -478,6 +532,12 @@ if neobundle#is_sourced("unite.vim")
   call unite#custom#profile('default', 'context', {
         \ 'prompt': '» '
         \})
+
+  if executable('ag')
+    let g:unite_source_grep_command = 'ag'
+    let g:unite_source_grep_default_opts = '--nogroup --nocolor --column'
+    let g:unite_source_grep_recursive_opt = ''
+  endif
 endif
 
 " }}}
@@ -684,6 +744,8 @@ if neobundle#is_sourced("neocomplete")
   " let g:neocomplete#sources#omni#functions.javascript = 'tern#Complete'
   let g:neocomplete#force_omni_input_patterns.javascript    = '[^. \t]\.\w*'
 
+  let g:neocomplete#force_omni_input_patterns.elixir = '[^.[:digit:] *\t]\.'
+
 
   augroup omnifuncs
     autocmd!
@@ -693,6 +755,7 @@ if neobundle#is_sourced("neocomplete")
     autocmd FileType javascript    setlocal omnifunc=tern#Complete
     autocmd FileType python        setlocal omnifunc=jedi#completions
     autocmd FileType xml           setlocal omnifunc=xmlcomplete#CompleteTags
+    autocmd FileType elixir        setlocal omnifunc=vivi#complete#omni
     " autocmd FileType ruby          setlocal omnifunc=rubycomplete#Complete
     " autocmd FileType java          set omnifunc=javacomplete#Complete
     " autocmd FileType java          set completefunc=javacomplete#Complete
@@ -730,6 +793,11 @@ let g:quickrun_config = {
       \ },
       \ 'html' : {
       \   'outputter' : 'browser',
+      \ },
+      \ 'javascript/babel' : {
+      \   'command' : 'babel',
+      \   'exec' : ['%c %o %s:p -o %s:p.babel', 'node %s:p.babel'],
+      \   'hook/sweep/files': '%S:p.babel',
       \ },
       \ 'markdown' : {
       \   'type': 'markdown/gfm',
@@ -858,6 +926,7 @@ let g:SimpleJsIndenter_CaseIndentLevel = -1
     let g:jedi#completions_enabled = 0
     let g:jedi#auto_vim_configuration = 0
     let g:jedi#rename_command = ""
+    let g:jedi#force_py_version = 3
 " }}}
 "----------------------------------------------------------------
 " android-path設定 {{{
@@ -921,9 +990,13 @@ elseif has('unix')
   let s:include_path = filter(
         \ split(glob('/usr/include/c++/*'), '\n') +
         \ split(glob('/usr/include/*/c++/*'), '\n') +
-        \ split(glob('/usr/include/*'), '\n'), 
+        \ split(glob('/usr/include/*/c++/*/*'), '\n') +
+        \ split(glob('/usr/include/*'), '\n') +
+        \ split(glob('/usr/lib/jvm/default/include/*'), '\n') +
+        \ split(glob('/usr/lib/jvm/default/include/linux/*'), '\n'), 
         \ 'isdirectory(v:val)')
-  let g:snowdrop#libclang_directory = '/usr/lib/x86_64-linux-gnu/' "ubuntu
+  let g:snowdrop#libclang_directory = '/usr/lib' "ubuntu
+  " let g:snowdrop#libclang_directory = '/usr/lib/x86_64-linux-gnu/' "ubuntu
   let g:snowdrop#libclang_file = 'libclang.so' "ubuntu
 endif
 
@@ -998,9 +1071,9 @@ let g:user_emmet_settings = {
 " ファイルが選択されたら、ウインドウを閉じる
 let g:proj_flags = "imstc"
 " <Leader>Pで、プロジェクトをトグルで開閉する
-nmap <silent><Leader>P <Plug>ToggleProject
+" nmap <silent><Leader>P <Plug>ToggleProject
 " <Leader>pで、デフォルトのプロジェクトを開く
-nmap <silent><Leader>p :Project<Enter>
+" nmap <silent><Leader>p :Project<Enter>
 " $HOME/.vim/after/plugin/project.vim
 if getcwd() != $HOME
   if filereadable(getcwd(). '/.vimprojects')
@@ -1021,9 +1094,8 @@ endif
 
 "----------------------------------------------------------------
 " indentLine設定 {{{
-if neobundle#is_sourced("indenLine")
-  let g:intentLine_char = "︙"
-  let g:intentLine_faster = 1
+if neobundle#is_sourced("indentLine")
+  " let g:indentLine_char = "︙"
 endif
 " }}}
 
@@ -1220,10 +1292,11 @@ aug END
 
 "----------------------------------------------------------------
 "airline {{{
+set laststatus=2
 let g:airline_detect_modified=1
 let g:ariline_detect_paste=1
 " let g:airline_enable_branch=1
-let g:airline_theme='wombat'
+let g:airline_theme='dark'
 let g:airline_powerline_fonts=1
 
 " let g:airline#extensions#syntastic#enabled = 1
@@ -1293,7 +1366,6 @@ let g:tagbar_type_tex = {
       \   'p:pagerefs:1:0'
       \ ],
       \ 'sort' : 0,
-      \ 'deffile' : expand('<sfile>:p:h:h') . '/ctags/latex.cnf'
       \}
 let g:tagbar_type_r = {
       \ 'ctagstype' : 'r',
@@ -1395,17 +1467,21 @@ nmap <silent><space>d :Codic<Enter>
 
 "---------------------------------------------------------------
 " Fugitive {{{
-nnoremap [fugitive] <Nop>
-nmap <space>g [fugitive]
-noremap <silent>[fugitive]s :<C-u>Gstatus<Enter>
-noremap <silent>[fugitive]r :<C-u>Gread<Enter>
-noremap <silent>[fugitive]w :<C-u>Gwrite<Enter>
-noremap <silent>[fugitive]c :<C-u>Gcommit<Enter>
-noremap <silent>[fugitive]b :<C-u>Gblame<Enter>
-noremap [fugitive]d :<C-u>Gdiff 
-noremap <silent>[fugitive]l :<C-u>Glog<Enter>
+noremap <silent>[git]s :<C-u>Gstatus<Enter>
+noremap <silent>[git]r :<C-u>Gread<Enter>
+noremap <silent>[git]w :<C-u>Gwrite<Enter>
+noremap <silent>[git]c :<C-u>Gcommit<Enter>
+noremap <silent>[git]b :<C-u>Gblame<Enter>
+noremap [git]d :<C-u>Gdiff 
+noremap <silent>[git]l :<C-u>Glog<Enter>
 " }}}
 
+"---------------------------------------------------------------
+" GitGutter {{{
+noremap <silent>[git]n :<C-u>GitGutterNextHunk<Enter>
+noremap <silent>[git]p :<C-u>GitGutterPrevHunk<Enter>
+" }}}
+"
 "---------------------------------------------------------------
 " Agit {{{
 nmap <silent><space>gv :Agit<Enter>
@@ -1433,6 +1509,12 @@ map [gundo] <Nop>
 "---------------------------------------------------------------
 " JSX {{{
 let g:jsx_ext_required = 1 "js拡張子でも有効にするときは0
+" }}}
+
+"---------------------------------------------------------------
+" vivi {{{
+let g:vivi_enable_auto_warm_up_iex = 1
+let g:vivi_enable_omni_completion = 0 " Neocomplete
 " }}}
 
 "---------------------------------------------------------------
@@ -1480,9 +1562,11 @@ augroup filetype-settings
   function! s:cpp_filetype_settings()
     setlocal tabstop=4 shiftwidth=4
     setlocal matchpairs+=<:>
-    setlocal balloonexpr=snowdrop#ballonexpr_typeof()
-    setlocal balloondelay=15
-    setlocal ballooneval
+    if has('gui_running')
+      setlocal balloonexpr=snowdrop#ballonexpr_typeof()
+      setlocal balloondelay=15
+      setlocal ballooneval
+    endif
     noremap <buffer> <silent>[unite]i :Unite snowdrop/include<Enter>
     noremap <buffer> <silent>[unite]o :Unite snowdrop/outline<Enter>
     noremap <buffer> <silent>[ide]v :Unite Ref/man<Enter>
@@ -1509,6 +1593,7 @@ augroup filetype-settings
     noremap <buffer> <silent>[unite]i :Unite ruby/require<Enter>
     noremap <buffer> <silent><Leader>t :QuickRun
     noremap <buffer> <silent>[ide]v :Unite -start-insert -default-action=split ref/ri<Enter>
+    setlocal keywordprg=ri
     noremap <buffer> <silent>[ide]p :VimShellInteractive pry<Enter>
   endfunction
 
@@ -1533,12 +1618,32 @@ augroup filetype-settings
   function! s:python_filetype_settings()
     setlocal tabstop=4 shiftwidth=4
     nnoremap <buffer> <silent>[ide]v :Ref pydoc 
+    setlocal keywordprg=pydoc
   endfunction
 
   autocmd FileType php call s:php_filetype_settings()
   function! s:php_filetype_settings()
     setlocal tabstop=4
     setlocal shiftwidth=4
+  endfunction
+
+  autocmd FileType elixir call s:elixir_filetype_settings()
+  function! s:elixir_filetype_settings()
+    setlocal tabstop=2
+    setlocal shiftwidth=2
+  endfunction
+
+  autocmd BufWinEnter,BufNewFile *.cr set filetype=crystal
+  autocmd FileType crystal call s:crystal_filetype_settings()
+  function! s:crystal_filetype_settings()
+    setlocal tabstop=2 shiftwidth=2
+  endfunction
+
+  autocmd BufWinEnter,BufNewFile *.kt set filetype=kotlin
+  autocmd FileType kotlin call s:kotlin_filetype_settings()
+  function! s:kotlin_filetype_settings()
+    setlocal tabstop=2
+    setlocal shiftwidth=2
   endfunction
 
   autocmd FileType htaccess call s:htaccess_filetype_settings()
@@ -1595,7 +1700,7 @@ endfunction
 
 command! LinuxKernelReading call s:LinuxKernelReading()
 function! s:LinuxKernelReading()
-  let s:kernel_source_directory = "$HOME/src/linux-3.15.7"
+  let s:kernel_source_directory = "$HOME/src/linux"
   tabnew "LinuxKernel"
   execute "lcd ".s:kernel_source_directory
   execute "VimFilerSimple -auto-cd -explorer -winwidth=40 -focus -status -no-quit"
