@@ -18,6 +18,10 @@
     ac-emoji
     ;;;; snippet
     yasnippet
+    ;;;; input method
+    ddskk
+    ;;;; path env
+    exec-path-from-shell
     ;;;; flymake
     flymake
     flymake-elixir
@@ -31,22 +35,26 @@
     flycheck
     flycheck-irony
     flycheck-pyflakes
-    flycheck-processing
     ;;;; quickrun
     quickrun
     ;;;; lisp
     slime ac-slime ;sly ac-sly
     ;;;; clojure
     clojure-mode inf-clojure cider ac-cider
-    clojure-cheatsheet slamhound
+    clojure-cheatsheet
+    clj-refactor
     ;;;; helm
     helm helm-descbinds helm-ag
     helm-projectile
     ;;;; helm with programming
     helm-pydoc
+    helm-gtags
     ;;;; cpp
     irony
-;    auto-complete-clang-async
+    auto-complete-clang-async
+    ;;;; rust
+    rust-mode
+    racer ac-racer flycheck-rust
     ;;;; python
     pyenv-mode jedi pydoc
     django-mode django-snippets
@@ -84,14 +92,18 @@
     pandoc-mode
     systemd                             ; Major mode for editing systemd units
     codic
+    google-translate
     undo-tree
     json-reformat
     kanban
     pomodoro
     projectile
-    sudden-death
+    popwin
+    powerline
+    
     ;;; hobby
     twittering-mode
+    sudden-death
     ))
 (dolist (package my/favorite-packages)
   (unless (package-installed-p package)
@@ -184,10 +196,21 @@
   :init
   (yas-global-mode 1))
 
+;;; skk
+(use-package ddskk
+  :init
+  (global-set-key (kbd "C-`") 'skk-mode))
+
+;;; path env
+(use-package exec-path-from-shell
+  :config
+  (let ((envs '("PATH" "GOPATH")))
+    (exec-path-from-shell-copy-envs envs)))
+
 ;;; quickrun
 (use-package quickrun
   :init
-  (global-set-key "\C-x\C-r" 'quickrun))
+  (global-set-key (kbd "C-x C-r") 'quickrun))
 
 ;;; helm
 (when (require 'helm-config nil t)
@@ -243,7 +266,7 @@
 (autoload 'run-scheme "cmuscheme" "Run an inferior Scheme process." t)
 
 ;; gauche-manual
-(autoload 'gauche-manua "gauche-manual" "jump to gauche online manual." t)
+(autoload 'gauche-manual "gauche-manual" "jump to gauche online manual." t)
 (add-hook 'scheme-mode-hook
 	  '(lambda ()
 	     (define-key scheme-mode-map "\C-c\C-f" 'gauche-manual)))
@@ -294,14 +317,48 @@
 ;;  PROGRAMMING  ;;
 ;;;;;;;;;;;;;;;;;;;
 
+;;;;;;;;;
+;; cpp ;;
+;;;;;;;;;
+
+;; irony
+(use-package irony
+  :init
+  :config
+  (progn
+    (setq irony-server-install-prefix "/home/kaki/.emacs.d/irony/bin")
+    (add-hook 'irony-mode-hook 'irony-eldoc)
+    (add-to-list 'ac-sources 'ac-source'irony)
+    (define-key irony-mode-map (kbd "M-RET") 'ac-complete-irony-async)))
+
+;;;;;;;;;;
+;; rust ;;
+;;;;;;;;;;
+(add-to-list 'exec-path (expand-file-name "~/.cargo/bin"))
+
+;; rust-mode
+(use-package rust-mode
+  :mode (("\\.rs$" . rust-mode))
+  :config
+  (setq-default rust-format-on-save t)
+  (setq-default  rust-run-clippy t))
+;; racer
+(use-package racer
+  :config
+  (add-hook 'rust-mode-hook 'racer-mode)
+  (add-hook 'racer-mode-hook #'eldoc-mode))
+
+;; ac-racer
+(use-package ac-racer
+  :config
+  (add-hook 'racer-mode 'ac-racer-setup))
+
 ;;;;;;;;;;;;
 ;; python ;;
 ;;;;;;;;;;;;
 
 ;; jedi
 (use-package jedi
-  :init
-  (add-hook 'python-mode-hook 'jedi:setup)
   :config
   (setq jedi:complete-on-dot t))
 
@@ -344,16 +401,24 @@
          ("\\.exs$" . elixir-mode)
          ("\\.elixir2\\'" . elixir-mode)))
 
+;; exenv
+(use-package exenv
+  :load-path "github/exenv.el/"
+  :config
+  (global-exenv-mode))
+
 ;; alchemist
 (use-package alchemist
-  :init
+  :config
   (add-hook 'elixir-mode-hook 'alchemist-mode)
-  (setq alchemist-mix-command "mix")
-  (setq alchemist-mix-test-task "test")
-  (setq alchemist-compile-command "elixirc"))
+  ;; (setq alchemist-mix-command "mix")
+  ;; (setq alchemist-mix-test-task "test")
+  ;; (setq alchemist-compile-command "elixirc")
+  (setq alchemist-project-compile-wehn-needed t)
+  (setq alchemist-goto-elixir-source-dir "~/src/elixir/src"))
 
 (use-package ac-alchemist
-  :init
+  :config
   (add-hook 'elixir-mode-hook 'ac-alchemist-setup)
   (add-hook 'alchemist-iex-mode-hook 'ac-alchemist-setup))
 
@@ -404,13 +469,14 @@
                                    "/usr/include
                                     /usr/include/c++/4.9.2
                                     /usr/include/boost
+                                    /usr/include/gtk-2.0
                                     /usr/include/sys")))
     (setq ac-clang-cflags (append '("-std=c++1y") ac-clang-cflags))
     (ac-clang-launch-completion-process))
   (add-hook 'c-mode-common-hook 'ac-cc-mode-setup)
   (add-hook 'c++-mode-common-hook 'ac-cc-mode-setup)
   (add-hook 'auto-complete-mode-hook 'ac-common-setup)
-  (global-set-key "\M-/" 'ac-start)
+  (global-set-key "\M-RET" 'ac-start)
   (define-key ac-complete-mode-map "\C-n" 'ac-next)
   (define-key ac-complete-mode-map "\C-p" 'ac-previous)
   :config
@@ -452,6 +518,28 @@
   :init
   (global-git-gutter-mode +1))
 
+;; powerline
+(use-package powerline
+  :config
+  (powerline-default-theme))
+
+;; google-translate
+(use-package google-translate
+  :config
+  (global-set-key (kbd "C-x t") 'google-translate-at-point)
+  (custom-set-variables
+   '(google-translate-default-source-language "en")
+   '(google-translate-default-target-language "ja")))
+
+;; popwin
+(use-package popwin
+  :config
+  (popwin-mode 1)
+  (setq display-buffer-function 'popwin:display-buffer)
+  (setq popwin:popup-window-position 'bottom)
+  ;; google-translate.el's buffer
+  (push '("*Google Translate*") popwin:special-display-config))
+
 ;;;;;;;;;;;
 ;; hobby ;;
 ;;;;;;;;;;;
@@ -466,3 +554,62 @@
 
 (global-set-key "\C-q" 'kill-buffer-and-window)
 (global-set-key "\C-m" 'newline-and-indent)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(ansi-color-names-vector
+   ["#272822" "#F92672" "#A6E22E" "#E6DB74" "#66D9EF" "#FD5FF0" "#A1EFE4" "#F8F8F2"])
+ '(compilation-message-face (quote default))
+ '(custom-safe-themes
+   (quote
+    ("196cc00960232cfc7e74f4e95a94a5977cb16fd28ba7282195338f68c84058ec" default)))
+ '(fci-rule-color "#49483E")
+ '(google-translate-default-source-language "en")
+ '(google-translate-default-target-language "ja")
+ '(highlight-changes-colors (quote ("#FD5FF0" "#AE81FF")))
+ '(highlight-tail-colors
+   (quote
+    (("#49483E" . 0)
+     ("#67930F" . 20)
+     ("#349B8D" . 30)
+     ("#21889B" . 50)
+     ("#968B26" . 60)
+     ("#A45E0A" . 70)
+     ("#A41F99" . 85)
+     ("#49483E" . 100))))
+ '(magit-diff-use-overlays nil)
+ '(package-selected-packages
+   (quote
+    (sudden-death twittering-mode powerline popwin pomodoro kanban undo-tree google-translate codic systemd pandoc-mode puppet-mode ninja-mode graphviz-dot-mode idle-highlight-mode yaml-mode vimrc-mode bison-mode adoc-mode yatex gist git-gutter magit monokai-theme nasm-mode llvm-mode processing-mode json-mode web-mode markdown-mode scss-mode requirejs-mode requirejs tide typescript-mode tern-auto-complete tern js2-mode ac-alchemist alchemist elixir-mode erlang yard-mode rspec-mode flymake-ruby robe rbenv rake django-snippets django-mode pydoc jedi pyenv-mode auto-complete-clang-async helm-gtags helm-pydoc helm-projectile helm-ag helm-descbinds clj-refactor yasnippet use-package quickrun inf-clojure flymake-yaml flymake-sass flymake-puppet flymake-json flymake-jshint flymake-haml flymake-elixir flycheck-pyflakes flycheck-irony exec-path-from-shell ddskk clojure-cheatsheet ac-slime ac-emoji ac-cider)))
+ '(vc-annotate-background nil)
+ '(vc-annotate-color-map
+   (quote
+    ((20 . "#F92672")
+     (40 . "#CF4F1F")
+     (60 . "#C26C0F")
+     (80 . "#E6DB74")
+     (100 . "#AB8C00")
+     (120 . "#A18F00")
+     (140 . "#989200")
+     (160 . "#8E9500")
+     (180 . "#A6E22E")
+     (200 . "#729A1E")
+     (220 . "#609C3C")
+     (240 . "#4E9D5B")
+     (260 . "#3C9F79")
+     (280 . "#A1EFE4")
+     (300 . "#299BA6")
+     (320 . "#2896B5")
+     (340 . "#2790C3")
+     (360 . "#66D9EF"))))
+ '(vc-annotate-very-old-color nil)
+ '(weechat-color-list
+   (unspecified "#272822" "#49483E" "#A20C41" "#F92672" "#67930F" "#A6E22E" "#968B26" "#E6DB74" "#21889B" "#66D9EF" "#A41F99" "#FD5FF0" "#349B8D" "#A1EFE4" "#F8F8F2" "#F8F8F0")))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
