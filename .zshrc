@@ -91,11 +91,19 @@ zplug "chrissicool/zsh-256color", use:"zsh-256color.plugin.zsh"
 zplug "zsh-users/zsh-completions"
 zplug "zsh-users/zsh-history-substring-search"
 
-zplug "plugins/git",   from:oh-my-zsh, if:"(( $+commands[git] ))"
-#zplug "plugins/rails", from:oh-my-zsh, if:"(( $+commands[rails] ))", defer:2
+zplug "junegunn/fzf-bin", \
+  from:gh-r, \
+  as:command, \
+  rename-to:fzf, \
+  use:"*darwin*amd64*"
 
-zplug "themes/norm", from:oh-my-zsh, as:theme
-# zplug "russjohnson/angry-fly-zsh", use:"angry-fly.zsh-theme"
+zplug "simonwhitaker/gibo", \
+  from:github, \
+  as:command, \
+  use:'gibo _gibo', \
+  hook-build:'mv gibo-completion.zsh _gibo'
+
+zplug "dracula/zsh", as:theme
 
 zplug "zsh-users/zsh-syntax-highlighting", defer:2
 
