@@ -70,6 +70,8 @@ set completeopt-=preview
 " 補完ポップメニュー項目数の最大値
 set pumheight=80
 set scrolloff=15
+" 段数以上のフォールディングは展開
+set foldlevel=6
 
 "----------------------------------------------------------------
 "キーマップの設定 (プラグインを使わない) mapping"
