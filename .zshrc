@@ -7,6 +7,7 @@ export EDITOR=vim
 export ANDROID_SDK_ROOT="${HOME}/sdk/android-sdk-linux"
 export ANDROID_HOME="${ANDROID_SDK_ROOT}"
 export ANDROID_NDK="${ANDROID_SDK_ROOT}/ndk-bundle"
+export ANDROID_NDK_HOME="${ANDROID_NDK}"
 export NDK_HOME="${ANDROID_NDK}"
 
 export GOPATH="${HOME}/golang"
