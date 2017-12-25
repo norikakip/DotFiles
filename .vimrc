@@ -294,7 +294,6 @@ call dein#add('vim-scripts/nginx.vim')
 call dein#add('tpope/vim-fugitive') " fugitive.vim: a Git wrapper so awesome, it should be illegal
 call dein#add('shumphrey/fugitive-gitlab.vim') " An extension to fugitive.vim for gitlab support
 call dein#add('idanarye/vim-merginal')
-call dein#add('gregsexton/gitv', {'rtp': ''})
 call dein#add('int3/vim-extradite')
 
 call dein#add('hsanson/vim-android', {'rtp': ''})
@@ -427,10 +426,6 @@ let g:html5_aria_attributes_complete = 0
 " }}}
 
 "----------------------------------------------------------------
-"Excite翻訳に飛ばす w3mが必要
-"let g:excitetranslate_options = 1 
-
-"----------------------------------------------------------------
 " NeoComplete設定 {{{
 if dein#tap("neocomplete")
   let g:acp_enableAtStartup = 0
@@ -490,30 +485,10 @@ if dein#tap("neocomplete")
   let g:neocomplete#sources = {
         \ '_':['neosnippet', 'tag', 'file/include', 'omni', 'file', 'look', 'buffer'],
         \}
-  " Search from neocomplete, omni candidates, vim keywords.
-  " let g:neocomplete#fallback_mappings = ['\<C-x>\<C-o>', '\<C-x>\<C-n>'] 
-  "
-  "g:neocomplete#same_filetype_lists initialize
-  " if !exists('g:neocomplete#same_filetypes')
-  "   let g:neocomplete#same_filetypes = {}
-  " endif
 
-  " if !exists('g:neocomplete#include_paths')
-  "   let g:neocomplete#include_paths = {}
-  " endif
   if !exists('g:neocomplete#include_patterns')
     let g:neocomplete#include_patterns = {}
   endif
-
-  " if !exists('g:neocomplete#filename_include_exts')
-  "   let g:neocomplete#filename_include_exts = {}
-  " endif
-  " if !exists('g:neocomplete#tags_filter_patterns')
-  "   let g:neocomplete#tags_filter_patterns = {}
-  " endif
-  " let g:neocomplete#tags_filter_patterns.c = ['vim', 'git']
-  " let g:neocomplete#tags_filter_patterns.cpp = ['vim', 'git']
-  " let g:neocomplete#tags_filter_patterns.ruby = ['vim', 'git']
 
   if !exists('g:neocomplete#omni_functions')
     let g:neocomplete#sources#omni#functions = {}
