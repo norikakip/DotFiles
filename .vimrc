@@ -335,6 +335,18 @@ call dein#add('dart-lang/dart-vim-plugin')
 call dein#add('miyakogi/vim-dartanalyzer', {'on_ft': 'dart'})
 
 call dein#add('fatih/vim-go', {'on_ft': 'go'})
+
+call dein#add('Shougo/denite.nvim')
+call dein#add('Shougo/deoplete.nvim')
+if !has('nvim')
+  call dein#add('roxma/nvim-yarp')
+  call dein#add('roxma/vim-hug-neovim-rpc')
+endif
+
+call dein#add('lambdalisue/gina.vim')
+
+call dein#add('w0rp/ale')
+
 call dein#end()
 
 filetype plugin indent on
@@ -365,32 +377,33 @@ endif
 " Unite VimFiler Tagbar{{{"
 
 nnoremap [ide] <Nop>
-nnoremap [unite] <Nop>
 nnoremap [git] <Nop>
 nmap <Space> [ide]
-nmap <Space>u [unite]
 nmap <Space>g [git]
 
 noremap  <silent>[ide]f :<C-u>VimFilerBufferDir<Enter>
 noremap  <silent>[ide]t :<C-u>TagbarToggle<Enter>
 noremap  <silent>[ide]q :bd<Enter>
-noremap  <silent>[unite]b :<C-u>Unite buffer_tab<Enter>
-noremap  <silent>[unite]d :<C-u>Unite -start-insert codic<enter>
-noremap  <silent>[unite]g :<C-u>Unite grep<enter>
-noremap  <silent>[unite]h :<C-u>Unite file_mru<Enter>
-noremap  <silent>[unite]l :<C-u>Unite line<Enter>
-noremap  <silent>[unite]ma :<C-u>Unite mark<Enter>
-noremap  <silent>[unite]me :<C-u>Unite output:message<Enter>
-noremap  <silent>[unite]o :<C-u>Unite outline <Enter>
-noremap  <silent>[unite]p :<C-u>Unite history/yank<Enter>
-noremap  <silent>[unite]s :<C-u>Unite session<Enter>
-noremap  <silent>[unite]t :<C-u>Unite tag<Enter>
-
-noremap  [unite]<Space> :<C-u>Unite output:
-noremap  <silent><C-TAB> :<C-u>Unite buffer<Enter>
-inoremap <silent><C-TAB> <C-o>:Unite buffer<Enter>
 
 if dein#tap("unite.vim")
+  nnoremap [unite] <Nop>
+  nmap <Space>u [unite]
+  noremap  <silent>[unite]b :<C-u>Unite buffer_tab<Enter>
+  noremap  <silent>[unite]d :<C-u>Unite -start-insert codic<enter>
+  noremap  <silent>[unite]g :<C-u>Unite grep<enter>
+  noremap  <silent>[unite]h :<C-u>Unite file_mru<Enter>
+  noremap  <silent>[unite]l :<C-u>Unite line<Enter>
+  noremap  <silent>[unite]ma :<C-u>Unite mark<Enter>
+  noremap  <silent>[unite]me :<C-u>Unite output:message<Enter>
+  noremap  <silent>[unite]o :<C-u>Unite outline <Enter>
+  noremap  <silent>[unite]p :<C-u>Unite history/yank<Enter>
+  noremap  <silent>[unite]s :<C-u>Unite session<Enter>
+  noremap  <silent>[unite]t :<C-u>Unite tag<Enter>
+
+  noremap  [unite]<Space> :<C-u>Unite output:
+  noremap  <silent><C-TAB> :<C-u>Unite buffer<Enter>
+  inoremap <silent><C-TAB> <C-o>:Unite buffer<Enter>
+
   call unite#custom#profile('default', 'context', {
         \ 'prompt': '» '
         \})
@@ -400,6 +413,45 @@ if dein#tap("unite.vim")
     let g:unite_source_grep_default_opts = '--nogroup --nocolor --column'
     let g:unite_source_grep_recursive_opt = ''
   endif
+endif
+
+if dein#tap("denite.nvim")
+  nnoremap [denite] <Nop>
+  nmap <Space>d [denite]
+  noremap  <silent>[denite]b :<C-u>Denite buffer<Enter>
+  noremap  <silent>[denite]h :<C-u>Denite file_mru<Enter>
+  noremap  <silent>[denite]g :<C-u>Denite grep<Enter>
+
+  if executable('rg')
+    call denite#custom#var('grep', 'command', ['rg'])
+    call denite#custom#var('grep', 'default_opts', ['--vimgrep', '--no-heading'])
+    call denite#custom#var('grep', 'recursive_opts', [])
+    call denite#custom#var('grep', 'pattern_opt', ['--regexp'])
+    call denite#custom#var('grep', 'separator', ['--'])
+    call denite#custom#var('grep', 'final_opts', [])
+  endif
+
+  call denite#custom#option('default', 'prompt', '>')
+  call denite#custom#map(
+        \ 'insert',
+        \ '<C-n>',
+        \ '<denite:move_to_next_line>',
+        \ 'noremap'
+        \)
+  call denite#custom#map(
+        \ 'insert',
+        \ '<C-p>',
+        \ '<denite:move_to_previous_line>',
+        \ 'noremap'
+        \)
+  call denite#custom#map('insert', '<C-a>', '<Home>')
+  call denite#custom#map('insert', '<C-e>', '<End>')
+  call denite#custom#map('insert', '<C-f>', '<Right>')
+  call denite#custom#map('insert', '<C-b>', '<Left>')
+
+  call denite#custom#filter('matcher_ignore_globs', 'ignore_globs',
+        \ [ '.git/', '.ropeproject/', '__pycache__/',
+        \   'venv/', 'images/', '*.min.*', 'img/', 'fonts/'])
 endif
 
 " }}}
@@ -836,7 +888,9 @@ let g:jscomplete_use = ['dom', 'moz', 'es6th']
 "----------------------------------------------------------------
 " neosnippet設定 {{{
 let g:neosnippet#snippets_directory = "~/.vim/vimnewfiles/snippet"
+let g:neosnippet#enable_completed_snippet = 1
 imap <C-s> <Plug>(neosnippet_expand_or_jump)
+smap <C-k> <Plug>(neosnippet_jump)
 " imap <C-s> <Plug>(neosnippet_expand_or_jump)
 " }}}
 
@@ -1217,7 +1271,7 @@ let g:gista#github_user = 'norikakip'
 
 "---------------------------------------------------------------
 " Codic {{{
-nmap <silent><space>d :Codic<Enter>
+nmap <silent><space>en :Codic<Enter>
 " }}}
 
 "---------------------------------------------------------------
@@ -1440,12 +1494,20 @@ augroup filetype_settings
     nmap <silent><buffer> gd <Plug>(rust-def)
     nmap <silent><buffer> <C-w>gf <Plug>(rust-def)
     nmap <silent><buffer> K <Plug>(rust-doc)
+    let g:quickrun_config["rust/cargo"] = {'exec': 'cargo run'}
   endfunction
   autocmd FileType rustdoc call s:ref_filetype_settings()
 
   autocmd FileType go call s:go_giletype_settings()
   function! s:go_giletype_settings()
     setlocal autowrite
+    setlocal noexpandtab
+  endfunction
+
+  autocmd FileType gitconfig call s:gitconfig_filetype_settings()
+  function! s:gitconfig_filetype_settings()
+    setlocal tabstop=2
+    setlocal shiftwidth=2
     setlocal noexpandtab
   endfunction
 
@@ -1518,4 +1580,9 @@ endfunction
 command! CargoTest call s:CargoTest()
 function! s:CargoTest()
   !cargo test
+endfunction
+
+command! CargoCheck call s:CargoCheck()
+function! s:CargoCheck()
+  !cargo check
 endfunction
