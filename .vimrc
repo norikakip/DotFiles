@@ -196,8 +196,8 @@ call dein#add('rhysd/vim-textobj-ruby')
 
 call dein#add('Shougo/unite-outline')
 call dein#add('tyru/open-browser.vim')
-call dein#add('neco-look') " 1.0   A neocomplcache plugin for `/usr/bin/look` for completing words in English.
-call dein#add('javacomplete', {
+call dein#add('vim-scripts/neco-look') " 1.0   A neocomplcache plugin for `/usr/bin/look` for completing words in English.
+call dein#add('vim-scripts/javacomplete', {
       \ 'if': executable('javac'),
       \ 'build': 'javac autoload/Reflection.java',
       \})
@@ -231,7 +231,7 @@ call dein#add('osyo-manga/vim-watchdogs')
 call dein#add('jceb/vim-hier')
 call dein#add('dannyob/quickfixstatus')
 call dein#add('majutsushi/tagbar') " Vim plugin that displays tags in a window, ordered by class etc.
-call dein#add('tagbar-phpctags' ,{
+call dein#add('vim-scripts/tagbar-phpctags' ,{
       \ 'if': executable('chmod'),
       \ 'build': 'chmod +x bin/phpctags',
       \})
@@ -321,7 +321,7 @@ call dein#add('rhysd/vim-crystal', {'on_ft': 'crystal'})
 call dein#add('udalov/kotlin-vim', {'on_ft': 'kotlin'})
 call dein#add('tpope/vim-fireplace', {'on_ft': 'clojure'})
 call dein#add('ujihisa/neoclojure.vim', {'on_ft': 'clojure'})
-call dein#add('gtags.vim')
+call dein#add('vim-scripts/gtags.vim')
 call dein#add('slashmili/alchemist.vim', {'on_ft': 'elixir'})
 call dein#add('powerman/vim-plugin-AnsiEsc')
 call dein#add('vim-erlang/vim-erlang-omnicomplete', {'on_ft': 'erlang'})
