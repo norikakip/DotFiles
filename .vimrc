@@ -125,7 +125,6 @@ if !has('Kaoriya')
 else
   call dein#add('Shougo/vimproc')
 endif
-call dein#add('Shougo/vimshell')
 call dein#add('Shougo/neossh.vim') " SSH interface for Vim plugins
 call dein#add('Shougo/unite.vim')
 call dein#add('Shougo/tabpagebuffer.vim')
@@ -134,8 +133,6 @@ call dein#add('Shougo/vimfiler')
 call dein#add('tpope/vim-surround')
 call dein#add('tpope/vim-repeat')
 call dein#add('sjl/gundo.vim') " A git mirror of gundo.vim
-" call dein#add('Lokaltog/vim-easymotion') "キーカーソル移動補助
-call dein#add('vim-scripts/Justify') "両端揃え
 call dein#add('h1mesuke/vim-alignta') "テキスト整形
 call dein#add('kana/vim-textobj-user') "テキストオブジェクト拡張
 call dein#add('kana/vim-textobj-indent') "テキストオブジェクト拡張
@@ -147,7 +144,6 @@ call dein#add('tyru/eskk.vim', {'on_i': 1})
 call dein#add('fuenor/qfixhowm')
 call dein#add('mattn/webapi-vim')
 call dein#add('bling/vim-airline') " lean & mean statusline for vim that')s light as air
-call dein#add('kmnk/vim-unite-giti')
 call dein#add('tsukkee/unite-help') " help source for unite.vim
 call dein#add('thinca/vim-unite-history') " A source of unite.vim for history of command/search.
 
@@ -187,16 +183,11 @@ call dein#add('godlygeek/tabular')
 call dein#add('joker1007/vim-markdown-quote-syntax')
 call dein#add('rcmdnk/vim-markdown')
 call dein#add('hail2u/vim-css3-syntax')
-call dein#add('Simple-Javascript-Indenter', {'rtp': ''}) " 1.0.1 A simple javascript indent script, support OOP, jquery
-call dein#add('jelera/vim-javascript-syntax', {'rtp': ''}) " Enhanced javascript syntax file for Vim
-call dein#add('pangloss/vim-javascript', {'rtp': ''})
-call dein#add('mxw/vim-jsx', {'rtp': ''})
 call dein#add('isRuslan/vim-es6')
 
 call dein#add('tpope/vim-rails')
 call dein#add('tpope/vim-rake')
 call dein#add('tpope/vim-bundler', {'build': 'gem install bundler gem-browse gem-ctags'})
-call dein#add('mattn/excitetranslate-vim')
 call dein#add('basyura/unite-rails') " a unite.vim plugin for rails
 call dein#add('ujihisa/unite-rake') " A Unite.vim plugin to run tasks or to view descriptions easily, using rake command
 call dein#add('rhysd/unite-ruby-require.vim')
@@ -288,7 +279,6 @@ call dein#add('todesking/ruby_hl_lvar.vim', {
       \})
 call dein#add('yuku-t/vim-ref-ri') " A vim-ref and Unite.vim source for ri.
 call dein#add('thinca/vim-localrc')
-call dein#add('Yggdroot/indentLine')
 call dein#add('vim-ruby/vim-ruby')
 call dein#add('yuratomo/w3m.vim.git', {'if': executable('w3m')})
 call dein#add('cohama/lexima.vim')
@@ -384,8 +374,6 @@ nmap <Space>g [git]
 
 noremap  <silent>[ide]f :<C-u>VimFilerBufferDir<Enter>
 noremap  <silent>[ide]t :<C-u>TagbarToggle<Enter>
-noremap  <silent>[ide]p :<C-u>Project<Enter>
-noremap  <silent>[ide]s :<C-u>VimShellPop<Enter>
 noremap  <silent>[ide]q :bd<Enter>
 noremap  <silent>[unite]b :<C-u>Unite buffer_tab<Enter>
 noremap  <silent>[unite]d :<C-u>Unite -start-insert codic<enter>
@@ -911,24 +899,6 @@ let g:user_emmet_settings = {
 " }}}
 
 "----------------------------------------------------------------
-" project.vim {{{
-" ファイルが選択されたら、ウインドウを閉じる
-let g:proj_flags = "imstc"
-" <Leader>Pで、プロジェクトをトグルで開閉する
-" nmap <silent><Leader>P <Plug>ToggleProject
-" <Leader>pで、デフォルトのプロジェクトを開く
-" nmap <silent><Leader>p :Project<Enter>
-" $HOME/.vim/after/plugin/project.vim
-if getcwd() != $HOME
-  if filereadable(getcwd(). '/.vimprojects')
-    Project .vimprojects
-  endif
-endif
-" プロジェクトを開いたときに、フォールディングを展開した状態にする
-au BufAdd .vimprojects silent! %foldopen!
-" }}}
-
-"----------------------------------------------------------------
 " vim-indent-guides設定 {{{
 if dein#tap("vim-indent-guideline")
   let g:indent_guides_guide_size = 2
@@ -958,32 +928,6 @@ else
 endif
 " }}}
 
-"----------------------------------------------------------------
-" VimShell設定 {{{
-if dein#tap("vimshell")
-  map <Leader>sh <Plug>(vimshell_split_switch)
-  let g:vimshell_scrollback_limit = 5000
-  let g:vimshell_user_prompt = 'getcwd()'
-  let g:vimshell_enable_smart_case = 1
-  if has('win32') || has('win64')
-    "Display user name on Windows.
-    let g:vimshell_prompt = $USERNAME. "% "
-  else
-    "Display user name on Linux.
-    let g:vimshell_prompt = $USER . "% "
-  endif
-  " Initialize execute file list
-  let g:vimshell_execute_file_list = {}
-  call vimshell#set_execute_file('txt,vim,c,h,cpp,d,java,css,scss,js,tex', 'vim') "open in vim
-  call vimshell#set_execute_file('html,xhtml', 'gexe firefox')
-  call vimshell#set_execute_file('pdf', 'gexe evince')
-
-  let g:vimshell_execute_file_list['rb'] = 'ruby'
-  let g:vimshell_execute_file_list['pl'] = 'perl'
-  let g:vimshell_execute_file_list['py'] = 'python'
-  let g:vimshell_execute_file_list['html'] = 'firefox'
-  endif
-" }}}
 
 "----------------------------------------------------------------
 " QfixHowm/qfixmemo設定 {{{
@@ -1119,15 +1063,6 @@ aug MyAutoCmd
   au User Rails call UniteRailsSetting()
 aug END
 "}}}
-
-"----------------------------------------------------------------
-" "Powerline {{{
-" "temp powerline
-" " if has('unix')
-" " autocmd WinEnter * set guifont=Ricty\ for\ Powerline\ 12
-" " endif
-" set laststatus=2
-" "}}}
 
 "----------------------------------------------------------------
 "airline {{{
