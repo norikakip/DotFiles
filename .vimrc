@@ -70,14 +70,11 @@ set completeopt-=preview
 " 補完ポップメニュー項目数の最大値
 set pumheight=80
 set scrolloff=15
-" 段数以上のフォールディングは展開
-set foldlevel=6
 
 "----------------------------------------------------------------
 "キーマップの設定 (プラグインを使わない) mapping"
 "----------------------------------------------------------------
 
-" mouseを無効化
 inoremap <LeftMouse> <Nop>
 inoremap <LeftDrag> <Nop>
 inoremap <LeftRelease> <Nop>
@@ -244,7 +241,7 @@ call dein#add('osyo-manga/vim-snowdrop')
 call dein#add('shawncplus/phpcomplete.vim') " Improved PHP omnicompletion
 call dein#add('osyo-manga/vim-monster', {
       \ 'if': has('ruby') && executable('gem'),
-      \ 'build' : 'gem install rcodetools',
+      \ 'build' : 'gem install solargraph',
       \})
 call dein#add('mackee/unite-httpstatus')
 call dein#add('Shougo/vinarise.vim') " Ultimate hex editing system with Vim
@@ -273,10 +270,6 @@ call dein#add('lambdalisue/vim-django-support', {
       \})
 call dein#add('kana/vim-operator-user')
 call dein#add('kana/vim-operator-replace')
-call dein#add('todesking/ruby_hl_lvar.vim', {
-      \ 'if' : has('lua'),
-      \ 'on_ft' : ['ruby', 'ruby.rspec'],
-      \})
 call dein#add('yuku-t/vim-ref-ri') " A vim-ref and Unite.vim source for ri.
 call dein#add('thinca/vim-localrc')
 call dein#add('vim-ruby/vim-ruby')
@@ -811,15 +804,11 @@ augroup END
 "----------------------------------------------------------------
 " monster設定 {{{
 if dein#tap("vim-monster")
- let g:monster#completion#rcodetools#backend = 'async_rct_complete'
+ let g:monster#completion#solargraph#backend = "async_solargraph_suggest"
+ let g:monster#completion#backend = 'solargraph'
 endif
 " }}}
 
-"----------------------------------------------------------------
-" ruby_hl_lvar設定 {{{
-let g:ruby_hl_lvar_auto_enable = 1
-" }}}
-"
 "----------------------------------------------------------------
 " quickhl設定 {{{
 if dein#tap("vim-quickhl")
@@ -1321,26 +1310,14 @@ let g:jsx_ext_required = 1 "js拡張子でも有効にするときは0
 " }}}
 
 "---------------------------------------------------------------
-" vivi {{{
-" let g:vivi_enable_auto_warm_up_iex = 1
-" let g:vivi_enable_omni_completion = 0 " Neocomplete
-" }}}
-
-"---------------------------------------------------------------
-" alchemist.vim {{{
-" }}}
-
-"---------------------------------------------------------------
 " rust {{{
 let g:rust_conceal = 0
-" let g:rustfmt_autosave = 1
 " }}}
 
 "---------------------------------------------------------------
-" vim-racer {{{
-let $RUST_SRC_PATH = expand('~/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src')
+" ale {{{
+let g:ale_linters = {'cpp':  ['clang', 'clangcheck', 'clangtidy', 'cpplint', 'gcc']}
 " }}}
-
 "----------------------------------------------------------------
 " Filetype settings"
 "----------------------------------------------------------------
