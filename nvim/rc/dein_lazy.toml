@@ -1,0 +1,45 @@
+[[plugins]]
+repo = 'wsdjeg/dein-ui.vim'
+on_cmd = 'DeinUpdate'
+
+[[plugins]]
+repo = 'cespare/vim-toml'
+on_ft = ['toml']
+
+[[plugins]]
+repo = 'slim-template/vim-slim'
+on_ft = ['slim']
+
+[[plugins]]
+repo = 'fatih/vim-go'
+on_ft = ['go']
+hook_add = """
+source ~/.config/nvim/rc/vim-go.rc.vim
+"""
+
+[[plugins]]
+repo = 'elixir-editors/vim-elixir'
+on_ft = ['elixir']
+
+[[plugins]]
+repo = 'mhinz/vim-mix-format'
+on_ft = ['elixir']
+hook_add = """
+let g:mix_format_onsave = 1
+"""
+
+[[plugins]]
+repo = 'leafgarland/typescript-vim'
+on_ft = ['typescript']
+
+[[plugins]]
+repo = 'peitalin/vim-jsx-typescript'
+on_ft = ['typescript', 'jsx', 'tsx']
+
+[[plugins]]
+repo = 'dart-lang/dart-vim-plugin'
+on_ft = ['dart']
+
+[[plugins]]
+repo = 'keith/swift.vim'
+on_ft = ['swift']

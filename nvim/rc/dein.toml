@@ -1,0 +1,113 @@
+[[plugins]]
+repo = 'Shougo/denite.nvim'
+hook_add = """
+source ~/.config/nvim/rc/denite.rc.vim
+"""
+
+[[plugins]]
+repo = 'Shougo/neomru.vim'
+
+[[plugins]]
+repo = 'Shougo/defx.nvim'
+hook_add = """
+source ~/.config/nvim/rc/defx.rc.vim
+"""
+
+[[plugins]]
+repo = 'kristijanhusak/defx-icons'
+
+[[plugins]]
+repo = 'bagrat/vim-buffet'
+hook_add = """
+let g:buffet_powerline_separators = 1
+let g:buffet_use_devicons = 1
+"""
+
+[[plugins]]
+repo = 'ryanoasis/vim-devicons'
+
+[[plugins]]
+repo = '~/Project/OSS/denite-man'
+
+[[plugins]]
+repo = 'neoclide/coc.nvim'
+rev = 'release'
+merged = 0
+hook_add = """
+source ~/.config/nvim/rc/coc-nvim.rc.vim
+"""
+
+[[plugins]]
+repo = 'liuchengxu/vista.vim'
+hook_add = """
+nnoremap <silent><space>t :<C-u>Vista!!<CR>
+let g:vista_executive_for = {
+  \ 'rust': 'coc',
+  \ 'c': 'coc',
+  \ 'cpp': 'coc',
+  \ 'go': 'coc',
+  \ 'typescript': 'coc',
+  \ 'javascript': 'coc',
+  \ 'json': 'coc',
+  \ 'yaml': 'coc',
+  \ 'elixir': 'coc',
+  \ 'markdown': 'toc'
+  \}
+let g:vista#renderer#enable_icon = 1
+"""
+
+#[[plugins]]
+#repo = 'tpope/vim-surround'
+
+#[[plugins]]
+#repo = 'tpope/vim-repeat'
+
+[[plugins]]
+repo = 'machakann/vim-sandwich'
+
+[[plugins]]
+repo = 'airblade/vim-gitgutter'
+
+[[plugins]]
+repo = 'liuchengxu/eleline.vim'
+hook_add = """
+let g:eleline_powerline_fonts = 1
+"""
+
+[[plugins]]
+repo = 'arcticicestudio/nord-vim'
+
+[[plugins]]
+repo = 'arzg/vim-colors-xcode'
+hook_add = """
+let g:xcodedark_green_comments = 1
+let g:xcodelight_green_comments = 1
+"""
+
+[[plugins]]
+repo = 'sainnhe/vim-color-forest-night'
+
+[[plugins]]
+repo = 'sainnhe/edge'
+
+[[plugins]]
+repo = 'kana/vim-altr'
+
+[[plugins]]
+repo = 'preservim/nerdcommenter'
+
+[[plugins]]
+repo = 'unblevable/quick-scope'
+hook_add = """
+let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
+"""
+
+[[plugins]]
+repo = 'haya14busa/vim-asterisk'
+hook_add = """
+let g:asterisk#keeppos = 1
+map *   <Plug>(asterisk-z*)
+map #   <Plug>(asterisk-z#)
+map g*  <Plug>(asterisk-gz*)
+map g#  <Plug>(asterisk-gz#)
+"""
