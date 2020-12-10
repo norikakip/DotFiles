@@ -12,13 +12,17 @@ export NDK_HOME="${ANDROID_NDK}"
 
 export GOPATH="${HOME}/golang"
 ########## PATH ##########
-if [ -d $HOME/.anyenv ] ; then
-    export PATH="$HOME/.anyenv/bin:$PATH"
-    eval "$(anyenv init -)"
+if [ -d /usr/local/opt/asdf/ ]; then
+  . /usr/local/opt/asdf/asdf.sh
 fi
+#if [ -d $HOME/.anyenv ] ; then
+#    export PATH="$HOME/.anyenv/bin:$PATH"
+#    eval "$(anyenv init - zsh --norehash)"
+#fi
 
 export PATH="${ANDROID_SDK_ROOT}/platform-tools:${PATH}"
 export PATH="${ANDROID_SDK_ROOT}/tools:${PATH}"
+export PATH="${ANDROID_SDK_ROOT}/tools/bin:${PATH}"
 export PATH="${ANDROID_NDK}:${PATH}"
 export PATH="${GOPATH}/bin:${PATH}"
 export PATH="${HOME}/bin:${PATH}"
@@ -85,79 +89,59 @@ setopt equals
 setopt notify
 setopt no_beep
 
-########## zplug ##########
-source ~/.zplug/init.zsh
+########## zinit ##########
+source ~/.zinit/bin/zinit.zsh
+autoload -Uz _zinit
+(( ${+_comps} )) && _comps[zinit]=_zinit
 
-zplug "chrissicool/zsh-256color", use:"zsh-256color.plugin.zsh"
-zplug "zsh-users/zsh-completions"
-zplug "zsh-users/zsh-history-substring-search"
+zinit for \
+  light-mode chrissicool/zsh-256color \
+  light-mode zsh-users/zsh-autosuggestions \
+  light-mode zdharma/fast-syntax-highlighting \
+  light-mode dracula/zsh
+zinit wait lucid for \
+  light-mode zsh-users/zsh-history-substring-search \
+  atload"zicompinit; zicdreplay" blockf zsh-users/zsh-completions
 
-zplug "junegunn/fzf-bin", \
-  from:gh-r, \
-  as:command, \
-  rename-to:fzf, \
-  use:"*linux*amd64*"
-
-zplug "simonwhitaker/gibo", \
-  from:github, \
-  as:command, \
-  use:'gibo _gibo', \
-  hook-build:'mv gibo-completion.zsh _gibo'
-
-zplug "dracula/zsh", as:theme
-
-zplug "zsh-users/zsh-syntax-highlighting", defer:2
+zinit wait lucid for \
+ from"gh-r" as"program" junegunn/fzf-bin \
+ from"gh" as"program" simonwhitaker/gibo \
+ from"gh-r" as"program" x-motemen/ghq \
+ from"gh" as"program" ryanmjacobs/c
 
 # Add local completions if exists.
-_local_completions="${HOME}/.zsh/completions"
-if [ -d ${_local_completions} ]; then
-  zplug ${_local_completions}, from:local
-fi
-# Install all plugins
-if ! zplug check --verbose; then
-  echo; zplug install
-fi
+#zinit creinstall "${HOME}/.zsh/completions"
 
-zplug load
+########## fzf ##########
 
-########## Peco ##########
-
-if [ -x "$(command -v peco)" ]; then
-  function _peco-select-history() {
-    local tac
-    if which tac > /dev/null; then
-      tac="tac"
-    else
-      tac="tail -r"
-    fi
+if [ -x "$(command -v fzf)" ]; then
+  function _fzf-select-history() {
+    INITIAL_QUERY="'"
     BUFFER=$(\
       \history -n 1 |\
-      eval $tac |\
-      peco --query "$LBUFFER"\
+      awk '!a[$0]++' |\
+      sed 's/\\n/\n/' |\
+      fzf --layout reverse --height 40% --tac\
       )
     CURSOR=$#BUFFER
     zle clear-screen
   }
-  zle -N peco-select-history _peco-select-history
+  zle -N fzf-select-history _fzf-select-history
 
-  function _peco-select-docker-history() {
-    local tac
-    if which tac > /dev/null; then
-      tac="tac"
-    else
-      tac="tail -r"
-    fi
+  function _fzf-select-docker-history() {
     BUFFER=$(\
       \history -n 1 |\
-      eval $tac |\
       grep "docker run" |\
-      peco --query "$LBUFFER"\
+      fzf --tac\
       )
     CURSOR=$#BUFFER
     zle clear-screen
   }
-  zle -N peco-select-docker-history _peco-select-docker-history
+  zle -N fzf-select-docker-history _fzf-select-docker-history
 
-  bindkey '^R' peco-select-history
-  bindkey '^Rd' peco-select-docker-history
+  bindkey '^R' fzf-select-history
+  bindkey '^Rd' fzf-select-docker-history
 fi
+
+# Added by serverless binary installer
+export PATH="$HOME/.serverless/bin:$PATH"
